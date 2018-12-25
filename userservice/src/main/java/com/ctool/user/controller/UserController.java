@@ -1,11 +1,14 @@
 package com.ctool.user.controller;
 
+import com.ctool.user.model.User;
+import com.ctool.user.model.UserHolder;
 import com.ctool.user.service.UserService;
 import com.ctool.user.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -18,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther: Kylinrix
@@ -30,11 +34,26 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
+    UserHolder userHolder;
+    @Autowired
     UserService userService;
 
     @Autowired
     RedisTemplate redisTemplate;
 
+    /**
+     * 注册
+     * @param model
+     * @param response
+     * @param request
+     * @param username
+     * @param password
+     * @param email
+     * @param next
+     * @param headUrl
+     * @return
+     * @Description 约定 userid 的存在视为登录登出的凭证
+     */
     @ResponseBody
     @RequestMapping(path={"/register"},method = {RequestMethod.POST})
     public String register (Model model,
@@ -48,16 +67,29 @@ public class UserController {
 
         try{
             Map<String, Object> map = userService.register(username, password,email,headUrl);
-
-
-            return JsonUtil.getJSONString(0,map);
+            if(map.containsKey("user"))
+                return JsonUtil.getJSONString(0,map);
+            else if (map.get("msg")!=null)
+                return JsonUtil.getJSONString(1, map);
+            else
+                return JsonUtil.getJSONString(2, map);
         }
         catch (Exception e){
             logger.error("注册异常： " + e.getMessage());
-            return JsonUtil.getJSONString(1,"后台异常");
+            return JsonUtil.getJSONString(-1,"后台注册异常");
         }
     }
 
+    /**
+     * 登录
+     * @param model
+     * @param response
+     * @param request
+     * @param username
+     * @param password
+     * @param next
+     * @return
+     */
     @ResponseBody
     @RequestMapping(path={"/login"},method = {RequestMethod.POST})
     public String login (Model model,
@@ -69,16 +101,50 @@ public class UserController {
         try{
             Map<String, Object> map = userService.login(username, password);
 
-            //这里可以使用sessionID更改redis中的user信息，这样其他微服务就可以通过redis和sessionId获取当前登录的用户了。
+            if(map.containsKey("user")) {
+                //因为使用了redis-session共享，这样其他微服务就可以通过session获取当前登录的用户了。
+                User user = (User) map.get("user");
+                //request.getSession().setAttribute("online",1);
 
-            //页面重定向可以在前端使用
-            //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
+                //约定 userid的存在视为登录登出的凭证
+                request.getSession().setAttribute("userid", user.getId());
+                request.getSession().setAttribute("username", user.getName());
 
-            return JsonUtil.getJSONString(0,map);
+                //使用redis作为登录限制
+                redisTemplate.opsForValue().set("LOGINUSER:"+String.valueOf(user.getId()),request.getSession().getId(),1800,TimeUnit.SECONDS);
+                //页面重定向可以在前端使用
+                //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
+
+                return JsonUtil.getJSONString(0, map);
+            }
+            else if (map.get("msg")!=null)
+                return JsonUtil.getJSONString(1, map);
+            else
+                return JsonUtil.getJSONString(2, map);
         }
         catch (Exception e){
             logger.error("登录异常： " + e.getMessage());
-            return JsonUtil.getJSONString(1,"后台异常");
+            return JsonUtil.getJSONString(-1,"后台登录异常");
         }
     }
+
+
+    @ResponseBody
+    @RequestMapping(path={"/logout"},method = {RequestMethod.POST,RequestMethod.GET})
+    public String logout (Model model,
+                         HttpServletResponse response,
+                         HttpServletRequest request){
+        //request.getSession().setAttribute("online",0);
+        request.getSession().removeAttribute("userid");
+        request.getSession().removeAttribute("username");
+        //request.getSession().invalidate();
+
+
+
+        if(request.getSession().getAttribute("userid")!=null){
+            return JsonUtil.getJSONString(1,"登出异常");
+        }
+        return JsonUtil.getJSONString(0);
+    }
+
 }

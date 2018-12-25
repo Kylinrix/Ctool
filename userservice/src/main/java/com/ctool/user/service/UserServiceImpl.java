@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.ctool.user.util.StatusUtil.ORDINARY_USER;
+
 /**
  * @Auther: Kylinrix
  * @Date: 2018/12/24 17:49
@@ -60,9 +62,8 @@ public class UserServiceImpl implements UserService {
         regUser.setName(name);
         regUser.setSalt(UUID.randomUUID().toString().substring(0, 5).toLowerCase());
         regUser.setPassword(MD5Util.MD5(pwd+regUser.getSalt()));
-        Random random = new Random();
+        regUser.setStatus(ORDINARY_USER);
         userDAO.addUser(regUser);
-
         context.put("user",regUser);
         return context;
     }
@@ -95,5 +96,6 @@ public class UserServiceImpl implements UserService {
         map.put("user", user);
         return map;
     }
+
 
 }

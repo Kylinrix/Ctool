@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
  * @Auther: Kylinrix
  * @Date: 2018/12/25 14:23
  * @Email: Kylinrix@outlook.com
- * @Description:
+ * @Description:用于在Session有效期间中快速访问User信息。
  */
 @Component
 public class UserHolder {

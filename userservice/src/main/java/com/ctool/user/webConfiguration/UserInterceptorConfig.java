@@ -1,6 +1,6 @@
 package com.ctool.user.webConfiguration;
 
-import com.ctool.user.interceptor.UserInterceptor;
+import com.ctool.user.interceptor.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,11 +17,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Component
 public class UserInterceptorConfig implements WebMvcConfigurer {
     @Autowired
-    UserInterceptor userInterceptor;
+    LoginInterceptor loginInterceptor;
 
     private final String userPath = "/user/*";
 
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(userInterceptor).addPathPatterns(userPath);
+        //registry.addInterceptor(loginInterceptor).addPathPatterns(userPath);
+
+        registry.addInterceptor(loginInterceptor).excludePathPatterns("/login");
     }
 }
