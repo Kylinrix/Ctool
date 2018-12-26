@@ -1,6 +1,5 @@
 package com.ctool.user;
 
-import com.ctool.user.model.User;
 import com.ctool.user.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

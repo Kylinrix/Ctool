@@ -1,4 +1,4 @@
-package com.ctool.user.service;
+package com.ctool.service;
 
 import com.ctool.user.model.User;
 
@@ -15,7 +15,7 @@ public interface UserService {
     public User getUser(int id);
     public User getUser(String name);
     public int addUser(User user);
-    public Map<String,Object> register(String name , String pwd, String email, String HeadUrl);
-    public Map<String,Object> login(String name ,String pwd);
-    public boolean checkAndUpdateIfUserExpired(int userid ,String sessionId);
+    public Map<String,Object> register(String name, String pwd, String email, String HeadUrl);
+    public Map<String,Object> login(String name, String pwd);
+    public boolean checkAndUpdateIfUserExpired(int userid, String sessionId);
 }

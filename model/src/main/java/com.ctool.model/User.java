@@ -1,14 +1,12 @@
-package com.ctool.user.model;
-
-import java.io.Serializable;
+package com.ctool.model;
 
 /**
  * @Auther: Kylinrix
- * @Date: 2018/12/25 12:21
+ * @Date: 2018/12/26 14:53
  * @Email: Kylinrix@outlook.com
  * @Description:
  */
-public class User implements Serializable {
+public class User {
     private int id ;
     private String name;
     private String password;
@@ -19,9 +17,6 @@ public class User implements Serializable {
      * status 用户状态：普通0，管理员1
      */
     private int status;
-
-
-
 
     public int getId() {
         return id;
@@ -78,7 +73,6 @@ public class User implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
-
 
 
 }

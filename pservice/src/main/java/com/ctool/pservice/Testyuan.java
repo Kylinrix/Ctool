@@ -19,7 +19,7 @@ public class Testyuan {
     UserService userService;
 
     public void getyuancheng(){
-        System.out.println(userService.login());
+        System.out.println(userService.getUser("1"));
     }
 
 }

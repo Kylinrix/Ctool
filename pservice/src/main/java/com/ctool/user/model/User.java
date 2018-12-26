@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * @Auther: Kylinrix
- * @Date: 2018/12/25 12:21
+ * @Date: 2018/12/26 14:02
  * @Email: Kylinrix@outlook.com
  * @Description:
  */
@@ -19,9 +19,6 @@ public class User implements Serializable {
      * status 用户状态：普通0，管理员1
      */
     private int status;
-
-
-
 
     public int getId() {
         return id;
@@ -75,10 +72,7 @@ public class User implements Serializable {
         return status;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
+    public void setStatus(int status) { this.status = status; }
 
 
 }

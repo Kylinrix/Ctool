@@ -4,22 +4,21 @@ import com.ctool.user.model.User;
 import com.ctool.user.model.UserHolder;
 import com.ctool.user.service.UserService;
 import com.ctool.user.util.JsonUtil;
+import com.ctool.user.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -110,8 +109,11 @@ public class UserController {
                 request.getSession().setAttribute("userid", user.getId());
                 request.getSession().setAttribute("username", user.getName());
 
-                //使用redis作为登录限制
-                redisTemplate.opsForValue().set("LOGINUSER:"+String.valueOf(user.getId()),request.getSession().getId(),1800,TimeUnit.SECONDS);
+                //使用redis作为登录限制 {key->LOGINUSER:userid , value->sessionid}
+                redisTemplate.opsForValue().set("LOGINUSER:"+String.valueOf(user.getId()),
+                                                request.getSession().getId(),
+                                                KeyWordUtil.LOGINUSER_TIMEOUT,
+                                                TimeUnit.SECONDS);
                 //页面重定向可以在前端使用
                 //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
 
@@ -134,17 +136,33 @@ public class UserController {
     public String logout (Model model,
                          HttpServletResponse response,
                          HttpServletRequest request){
-        //request.getSession().setAttribute("online",0);
-        request.getSession().removeAttribute("userid");
-        request.getSession().removeAttribute("username");
-        //request.getSession().invalidate();
+        HttpSession session = request.getSession();
+
+        if(session.getAttribute("userid")!=null) {
+
+            int userid = (int)session.getAttribute("userid");
+            //request.getSession().setAttribute("online",0);
+            request.getSession().removeAttribute("userid");
+            request.getSession().removeAttribute("username");
+
+            //如何快速过期。
+            request.getSession().setMaxInactiveInterval(1);
+            //request.getSession().invalidate();
 
 
+            redisTemplate.delete(KeyWordUtil.LOGIN_USER_PREFIX+ String.valueOf(userid));
+            return JsonUtil.getJSONString(0);
 
-        if(request.getSession().getAttribute("userid")!=null){
-            return JsonUtil.getJSONString(1,"登出异常");
         }
-        return JsonUtil.getJSONString(0);
+        else
+            return JsonUtil.getJSONString(1,"登出异常");
+    }
+    @ResponseBody
+    @RequestMapping(path={"/test"},method = {RequestMethod.POST})
+    public String login (Model model,
+                         HttpServletResponse response,
+                         HttpServletRequest request){
+        return "8001:"+ request.getSession().getId();
     }
 
 }

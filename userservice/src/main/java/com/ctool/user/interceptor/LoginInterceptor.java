@@ -3,11 +3,11 @@ package com.ctool.user.interceptor;
 import com.ctool.user.model.User;
 import com.ctool.user.model.UserHolder;
 import com.ctool.user.service.UserService;
+import com.ctool.user.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -46,29 +46,34 @@ public class LoginInterceptor implements HandlerInterceptor {
         else {
 
             int userid = (int)session.getAttribute("userid");
-            Object loginUserSessionId = redisTemplate.opsForValue().get((Object)"LOGINUSER:"+String.valueOf(userid));
-            System.out.println(loginUserSessionId.toString());
+            String key = KeyWordUtil.LOGIN_USER_PREFIX+String.valueOf(userid);
+            Object loginUserSessionId = redisTemplate.opsForValue().get(key);
 
             //二次迭代时，为了实现长期无密码登录，这里可以考虑直接用一个token POJO类取代sessionID，结合过期时间和Cookie，存在Redis中做用户验证
 
+            //单点登录限制
             //如果当前sessionID 与 userid 所绑定的sessionID 相同，则重置过期时间
-            if(loginUserSessionId.toString().equals(session.getId())){
-                //更新过期时间
+            if(loginUserSessionId!=null && loginUserSessionId.toString().equals(session.getId())){
 
-                redisTemplate.opsForValue().set("LOGINUSER:"+String.valueOf(userid),session.getId(),1800,TimeUnit.SECONDS);
-                User user = userService.getUser((int) (request.getSession().getAttribute("userid")));
-                logger.info("重新更新Redis LOGINUSER");
+                //更新过期时间
+                redisTemplate.opsForValue().set(key,
+                                                session.getId(),
+                                                KeyWordUtil.LOGINUSER_TIMEOUT,
+                                                TimeUnit.SECONDS);
+                logger.info("重新更新Redis LOGINUSER:"+String.valueOf(userid)+" "+session.getId()+" 过期时间");
             }
-            else{
-                //如果不同，用户需登录
-                logger.warn("SessionID 与 绑定的 userid 不符，已在其它地方登录，请重新登录 ！");
+            else if(loginUserSessionId==null){
+                //如果不同，说明已在其它地方重新登录，即userid与新的sessionid绑定，则用户需登录。
+                logger.warn("SessionID 与 绑定的 userid 已过期，请重新登录 ！");
                 response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURI());
                 return false;
             }
-
-
-
-
+            else{
+                redisTemplate.delete(key);
+                logger.warn("SessionID 与 绑定的 userid 不符 ，已在其它地方登录，请重新登录 ！");
+                response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURI());
+                return false;
+            }
 
             User user = userService.getUser((int)session.getAttribute("userid"));
             if(user!=null) userHolder.setUser(user);
