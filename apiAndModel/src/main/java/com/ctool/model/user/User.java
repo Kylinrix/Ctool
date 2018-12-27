@@ -1,10 +1,10 @@
-package com.ctool.model;
+package com.ctool.model.user;
 
 import java.io.Serializable;
 
 /**
  * @Auther: Kylinrix
- * @Date: 2018/12/26 14:02
+ * @Date: 2018/12/27 15:11
  * @Email: Kylinrix@outlook.com
  * @Description:
  */
@@ -73,6 +73,4 @@ public class User implements Serializable {
     }
 
     public void setStatus(int status) { this.status = status; }
-
-
 }

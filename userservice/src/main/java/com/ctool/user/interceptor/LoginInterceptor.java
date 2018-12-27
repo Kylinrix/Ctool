@@ -1,6 +1,6 @@
 package com.ctool.user.interceptor;
 
-import com.ctool.model.User;
+import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.user.model.UserHolder;
 import com.ctool.user.util.KeyWordUtil;
