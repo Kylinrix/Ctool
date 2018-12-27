@@ -1,6 +1,6 @@
 package com.ctool.remoteService;
 
-import com.ctool.model.User;
+import com.ctool.model.user.User;
 
 import java.util.Map;
 

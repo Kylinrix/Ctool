@@ -1,6 +1,6 @@
 package com.ctool.user.model;
 
-import com.ctool.model.User;
+import com.ctool.model.user.User;
 import org.springframework.stereotype.Component;
 
 /**

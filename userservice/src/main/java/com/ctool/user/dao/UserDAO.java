@@ -1,6 +1,7 @@
 package com.ctool.user.dao;
 
-import com.ctool.model.User;
+
+import com.ctool.model.user.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

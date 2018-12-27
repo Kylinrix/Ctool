@@ -1,7 +1,7 @@
 package com.ctool.user.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.ctool.model.User;
+import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.user.dao.UserDAO;
 import com.ctool.user.util.KeyWordUtil;

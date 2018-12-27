@@ -1,4 +1,4 @@
-package com.ctool.model;
+package com.ctool.model.user;
 
 
 

@@ -3,6 +3,7 @@
 -- Host: localhost    Database: ctTest
 -- ------------------------------------------------------
 -- Server version	8.0.12
+SET FOREIGN_KEY_CHECKS=0;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,8 +19,9 @@
 --
 -- Table structure for table `board`
 --
-
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `board`;
+SET FOREIGN_KEY_CHECKS=1;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `board` (
@@ -47,8 +49,9 @@ UNLOCK TABLES;
 --
 -- Table structure for table `card`
 --
-
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `card`;
+SET FOREIGN_KEY_CHECKS=1;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `card` (
@@ -79,7 +82,9 @@ UNLOCK TABLES;
 -- Table structure for table `lane`
 --
 
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `lane`;
+SET FOREIGN_KEY_CHECKS=1;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `lane` (
@@ -107,8 +112,9 @@ UNLOCK TABLES;
 --
 -- Table structure for table `user`
 --
-
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `user`;
+SET FOREIGN_KEY_CHECKS=1;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `user` (
