@@ -1,8 +1,8 @@
 package com.ctool.user.interceptor;
 
-import com.ctool.user.model.User;
+import com.ctool.model.User;
+import com.ctool.remoteService.UserService;
 import com.ctool.user.model.UserHolder;
-import com.ctool.user.service.UserService;
 import com.ctool.user.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

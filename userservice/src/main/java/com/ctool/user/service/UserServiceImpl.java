@@ -1,8 +1,9 @@
 package com.ctool.user.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.ctool.model.User;
+import com.ctool.remoteService.UserService;
 import com.ctool.user.dao.UserDAO;
-import com.ctool.user.model.User;
 import com.ctool.user.util.KeyWordUtil;
 import com.ctool.user.util.MD5Util;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String name) { return userDAO.selectByName(name); }
+
 
     @Override
     public int addUser(User user) { return userDAO.addUser(user); }

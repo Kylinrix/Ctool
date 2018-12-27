@@ -1,6 +1,6 @@
 package com.ctool.user;
 
-import com.ctool.user.service.UserService;
+import com.ctool.remoteService.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

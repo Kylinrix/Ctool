@@ -1,9 +1,9 @@
 package com.ctool;
 
-import com.ctool.pservice.Testyuan;
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.ctool.remoteService.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -11,12 +11,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class PserviceApplicationTests {
 
-    @Autowired
-    Testyuan testyuan;
+    @Reference(check = false)
+    UserService userService;
+
     @Test
     public void contextLoads() {
 
-        testyuan.getyuancheng();
+        System.out.println(userService.getUser("1"));
+        userService.checkAndUpdateIfUserExpired(1,"1234-1234");
     }
 
 }

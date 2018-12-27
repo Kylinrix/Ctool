@@ -1,7 +1,6 @@
-package com.ctool.user.model;
+package com.ctool.model;
 
-import com.ctool.model.User;
-import org.springframework.stereotype.Component;
+
 
 /**
  * @Auther: Kylinrix
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @Email: Kylinrix@outlook.com
  * @Description:用于在Session有效期间中快速访问User信息。
  */
-@Component
+
 public class UserHolder {
     private static ThreadLocal<User> userholder = new ThreadLocal<User>();
 
