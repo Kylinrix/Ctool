@@ -3,6 +3,7 @@ package com.ctool.board.dao;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Lane;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -42,4 +43,7 @@ public interface LaneDAO {
 
     @Select({"select * form "+tableName+" where board_id = #{BoardId} order by created_date ASC "})
     List<Lane> selectByBoardId(int boardId);
+
+    @Delete({"delete from "+tableName + " where id =#{id}"})
+    int deleteById(int id);
 }

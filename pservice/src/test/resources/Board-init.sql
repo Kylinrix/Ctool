@@ -33,7 +33,7 @@ CREATE TABLE `board` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idnew_table_UNIQUE` (`id`),
   KEY `fk_own_user_id` (`own_user_id`),
-  CONSTRAINT `fk_own_user_id` FOREIGN KEY (`own_user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `fk_own_user_id` FOREIGN KEY (`own_user_id`) REFERENCES `user` (`id`)ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -65,7 +65,7 @@ CREATE TABLE `card` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idnew_table_UNIQUE` (`id`),
   KEY `fk_lane_id` (`lane_id`),
-  CONSTRAINT `fk_lane_id` FOREIGN KEY (`lane_id`) REFERENCES `lane` (`id`)
+  CONSTRAINT `fk_lane_id` FOREIGN KEY (`lane_id`) REFERENCES `lane` (`id`)ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -96,7 +96,7 @@ CREATE TABLE `lane` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idnew_table_UNIQUE` (`id`),
   KEY `fk_board_id` (`board_id`),
-  CONSTRAINT `fk_board_id` FOREIGN KEY (`board_id`) REFERENCES `board` (`id`)
+  CONSTRAINT `fk_board_id` FOREIGN KEY (`board_id`) REFERENCES `board` (`id`)ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

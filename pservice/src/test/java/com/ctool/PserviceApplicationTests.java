@@ -71,11 +71,16 @@ public class PserviceApplicationTests {
         card2.setLastChanger("user1");
         card2.setCardContent("this is card2");
 
-        boardDAO.addBoard(b);
-        laneDAO.addLane(lane);
-        cardDAO.addCard(card1);
-        cardDAO.addCard(card2);
-
+        int t = boardDAO.addBoard(b);
+        System.out.println(t);
+        t=laneDAO.addLane(lane);
+        System.out.println(t);
+        t=cardDAO.addCard(card1);
+        System.out.println(t);
+        t=cardDAO.addCard(card2);
+        System.out.println(t);
+        t = boardDAO.deleteById(1);
+        System.out.println(t);
         List<Card> list = cardDAO.selectByLaneId(1);
 
         for (int i= 0;i<list.size();i++){

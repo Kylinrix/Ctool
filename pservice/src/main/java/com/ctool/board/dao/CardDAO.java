@@ -3,9 +3,7 @@ package com.ctool.board.dao;
 
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -47,4 +45,15 @@ public interface CardDAO {
 
     @Select({"select * from "+tableName+" where lane_id = #{LaneId} order by created_date ASC "})
     List<Card> selectByLaneId(int laneId);
+
+    @Delete({"delete from "+tableName + " where id =#{id}"})
+    int deleteById(int id);
+
+    @Update({"update ", tableName, " " +
+            "set card_name=#{name} " +
+            "last_changer=#{userId} " +
+            "card_content=#{cardContent} " +
+            "description=#{description}"+
+            "where id=#{cardId}"})
+    void  updateCard( int cardId, String name,String userId,String cardContent,String description);
 }

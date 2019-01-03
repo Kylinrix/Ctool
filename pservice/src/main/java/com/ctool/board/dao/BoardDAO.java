@@ -1,6 +1,7 @@
 package com.ctool.board.dao;
 
 import com.ctool.model.board.Board;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -39,6 +40,9 @@ public interface BoardDAO {
     @Select({"select ", selectFields, " from ", tableName, " where id=#{id}"})
     Board selectById(int id);
 
-    @Select({"select * form "+tableName+" where own_user_id = #{userId} order by created_date ASC"})
+    @Select({"select * from "+tableName+" where own_user_id = #{userId} order by created_date ASC"})
     List<Board> selectByUserId(int userId);
+
+    @Delete({"delete from "+tableName + " where id =#{id}"})
+    int deleteById(int id);
 }
