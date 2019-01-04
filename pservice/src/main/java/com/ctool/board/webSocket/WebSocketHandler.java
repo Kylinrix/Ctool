@@ -23,7 +23,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @program: Ctool
- * @description: Websocket进入页处理
+ * @description: Websocket进入页处理，缺少心跳检测。
  * @author: KyLee
  * @create: 2019-01-03 14:51
  **/
