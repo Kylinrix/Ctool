@@ -111,6 +111,7 @@ public class ActionService {
         String action = jsonObject.getString("action");
         String entityType = jsonObject.getString("entity");
 
+        //添加insert后，添加对应的类型Id，前端需要得到ID才能做交互。
         if(action.equals(REQUEST_INSERT) ){
             if(entityType.equals(ENTITY_TYPE_CARD))jsonObject.put("card_id","c_"+String.valueOf(((Card)entity).getId()));
             if(entityType.equals(ENTITY_TYPE_LANE))jsonObject.put("lane_id","l_"+String.valueOf(((Lane)entity).getId()));
