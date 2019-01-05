@@ -1,15 +1,12 @@
 package com.ctool.board.dao;
 
 import com.ctool.model.board.Board;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 /**
- * @Auther: Kylinrix
+ * @Author: Kylinrix
  * @Date: 2018/12/27 15:20
  * @Email: Kylinrix@outlook.com
  * @Description:
@@ -32,7 +29,8 @@ public interface BoardDAO {
             "(",
             insertFields,
             ") values(#{ownUserId},#{boardName},#{createdDate},#{description})"})
-    int addBoard(Board board);
+    //@SelectKey(before = false,statement="SELECT LAST_INSERT_ID() AS ID",resultType = int.class,keyProperty = "id",keyColumn = "id")
+    int insertBoard(Board board);
 
     @Select({"select * from " +tableName+" where board_name=#{boardName}"})
     Board selectByName(String boardName);

@@ -7,6 +7,18 @@
     <groupId>com.ctool</groupId>
     <artifactId>apiAndModel</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <dependencies>
+    <dependency>
 
-    
+
+
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.47</version>
+    </dependency>
+
+
+
+    </dependencies>
+
 </project>

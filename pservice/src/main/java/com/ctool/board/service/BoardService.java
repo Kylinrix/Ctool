@@ -3,9 +3,12 @@ package com.ctool.board.service;
 import com.ctool.board.dao.BoardDAO;
 import com.ctool.board.dao.CardDAO;
 import com.ctool.board.dao.LaneDAO;
+import com.ctool.board.webSocket.BoardNettyServer;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import java.util.List;
  **/
 @Service
 public class BoardService {
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     @Autowired(required = false)
     BoardDAO boardDAO;
@@ -32,7 +36,7 @@ public class BoardService {
     @Autowired(required = false)
     LaneDAO laneDAO;
 
-    public boolean addBoard(@NotNull String boardName, @NotNull int userId, String description){
+    public Board addBoard(@NotNull String boardName, @NotNull int userId, String description){
 
         Board b = new Board();
         b.setBoardName(boardName);
@@ -42,10 +46,9 @@ public class BoardService {
         b.setOwnUserId(userId);
         b.setDescription(description);
 
-        //应该是成功返回行数，否则0，
-        //但是成功一直是返回1。我不知道为啥。
-        if(boardDAO.addBoard(b)>0)return true;
-        return false;
+        //mybatis Insert会把导入的对象加上自增的ID。
+        boardDAO.insertBoard(b);
+        return b;
     }
 
     //外键约束 ON DELETE CASCADE 保证联结的主表被删除时，子表也被删除。
@@ -56,14 +59,14 @@ public class BoardService {
     }
 
 
-    public boolean addLane(@NotNull int boardId,String name,String description){
+    public Lane addLane(@NotNull int boardId,String name,String description){
         Lane lane = new Lane();
         lane.setBoardId(boardId);
         lane.setCreatedDate(new Date());
         lane.setLaneName(name);
         lane.setDescription(description);
-        if(laneDAO.addLane(lane)>0)return true;
-        return false;
+        laneDAO.insertLane(lane);
+        return lane;
     }
 
     public boolean deleteLane(@NotNull int laneId){
@@ -71,15 +74,16 @@ public class BoardService {
         return false;
     }
 
-    public boolean addCard(@NotNull int cardId,@NotNull int laneId,String name,String userId,String CardContent) {
+    public Card addCard(@NotNull int laneId,String name,int userId,String CardContent,String description) {
         Card card = new Card();
         card.setCardName(name);
         card.setLaneId(laneId);
         card.setCreatedDate(new Date());
         card.setLastChanger(userId);
         card.setCardContent(CardContent);
-        if(cardDAO.addCard(card)>0)return true;
-        return false;
+        card.setDescription(description);
+        cardDAO.insertCard(card);
+        return card;
     }
 
     public boolean deleteCard(@NotNull int cardId){
@@ -87,9 +91,20 @@ public class BoardService {
         return false;
     }
 
-    public void updateCard(@NotNull int cardId,String name,String userId,String cardContent,String description){
-        cardDAO.updateCard(cardId,name,userId,cardContent,description);
+    public boolean  updateCard(@NotNull int cardId,String name,int userId,String cardContent,String description){
+      if(cardDAO.updateCard(cardId,name,userId,cardContent,description)>0)return true;
+      else return false;
     }
 
+    public Card getCard(int id){
+        return cardDAO.selectById(id);
+    }
+
+    public Lane getLane(int id){
+        return laneDAO.selectById(id);
+    }
+    public Board getBoard (int id){
+        return boardDAO.selectById(id);
+    }
 
 }

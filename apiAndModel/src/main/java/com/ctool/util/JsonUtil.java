@@ -1,4 +1,4 @@
-package com.ctool.user.util;
+package com.ctool.util;
 
 import com.alibaba.fastjson.JSONObject;
 

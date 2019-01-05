@@ -3,8 +3,8 @@ package com.ctool.user.controller;
 import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.user.model.UserHolder;
-import com.ctool.user.util.JsonUtil;
-import com.ctool.user.util.KeyWordUtil;
+import com.ctool.util.JsonUtil;
+import com.ctool.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +106,7 @@ public class UserController {
                 //request.getSession().setAttribute("online",1);
 
                 //约定 userid的存在视为登录登出的凭证
-                request.getSession().setAttribute("userid", user.getId());
+                request.getSession().setAttribute("userId", user.getId());
                 request.getSession().setAttribute("username", user.getName());
 
                 //使用redis作为登录限制 {key->LOGINUSER:userid , value->sessionid}
@@ -138,11 +138,11 @@ public class UserController {
                          HttpServletRequest request){
         HttpSession session = request.getSession();
 
-        if(session.getAttribute("userid")!=null) {
+        if(session.getAttribute("userId")!=null) {
 
-            int userid = (int)session.getAttribute("userid");
+            int userid = (int)session.getAttribute("userId");
             //request.getSession().setAttribute("online",0);
-            request.getSession().removeAttribute("userid");
+            request.getSession().removeAttribute("userId");
             request.getSession().removeAttribute("username");
 
             //如何快速过期。

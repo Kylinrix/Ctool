@@ -4,11 +4,12 @@ package com.ctool.board.dao;
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.mapping.StatementType;
 
 import java.util.List;
 
 /**
- * @Auther: Kylinrix
+ * @Author: Kylinrix
  * @Date: 2018/12/27 15:21
  * @Email: Kylinrix@outlook.com
  * @Description:
@@ -35,7 +36,16 @@ public interface CardDAO {
             "(",
             insertFields,
             ") values(#{laneId},#{cardName},#{cardContent},#{lastChanger},#{createdDate},#{description})"})
-    int addCard(Card card);
+//    @Options(useGeneratedKeys = true, keyProperty = "id",keyColumn = "id")
+//    @SelectKey(before = false,
+//            statementType=StatementType.STATEMENT,
+//            statement="SELECT LAST_INSERT_ID() AS id",
+//            resultType = int.class,
+//            keyProperty = "id",
+//            keyColumn = "id")
+    int insertCard(Card card);
+
+
 
     @Select({"select * from " +tableName+" where card_name=#{cardName}"})
     Card selectByName(String cardName);
@@ -50,10 +60,10 @@ public interface CardDAO {
     int deleteById(int id);
 
     @Update({"update ", tableName, " " +
-            "set card_name=#{name} " +
-            "last_changer=#{userId} " +
-            "card_content=#{cardContent} " +
-            "description=#{description}"+
-            "where id=#{cardId}"})
-    void  updateCard( int cardId, String name,String userId,String cardContent,String description);
+            " set card_name=#{name} " +
+            " last_changer=#{userId} " +
+            " card_content=#{cardContent} " +
+            " description=#{description} "+
+            " where id=#{cardId} "})
+    int  updateCard( int cardId, String name,int userId,String cardContent,String description);
 }

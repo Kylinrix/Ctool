@@ -61,26 +61,30 @@ public class PserviceApplicationTests {
         card1.setCardName("c1");
         card1.setLaneId(1);
         card1.setCreatedDate(new Date());
-        card1.setLastChanger("user1");
+        card1.setLastChanger(1);
         card1.setCardContent("this is card1");
 
         Card card2 = new Card();
         card2.setCardName("c2");
         card2.setLaneId(1);
         card2.setCreatedDate(new Date());
-        card2.setLastChanger("user1");
+        card2.setLastChanger(1);
         card2.setCardContent("this is card2");
 
-        int t = boardDAO.addBoard(b);
+        int t = boardDAO.insertBoard(b);
         System.out.println(t);
-        t=laneDAO.addLane(lane);
+        t=laneDAO.insertLane(lane);
         System.out.println(t);
-        t=cardDAO.addCard(card1);
+         t=cardDAO.insertCard(card1);
         System.out.println(t);
-        t=cardDAO.addCard(card2);
-        System.out.println(t);
+        t=cardDAO.insertCard(card2);
+        System.out.println(card2.getId());
+        t=cardDAO.insertCard(card2);
+        System.out.println("should be 3 :"+card2.getId());
+
         t = boardDAO.deleteById(1);
         System.out.println(t);
+
         List<Card> list = cardDAO.selectByLaneId(1);
 
         for (int i= 0;i<list.size();i++){

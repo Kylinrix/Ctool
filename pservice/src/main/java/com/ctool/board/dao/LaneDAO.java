@@ -3,15 +3,13 @@ package com.ctool.board.dao;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Lane;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.mapping.StatementType;
 
 import java.util.List;
 
 /**
- * @Auther: Kylinrix
+ * @Author: Kylinrix
  * @Date: 2018/12/27 15:21
  * @Email: Kylinrix@outlook.com
  * @Description:
@@ -33,7 +31,8 @@ public interface LaneDAO {
             "(",
             insertFields,
             ") values(#{boardId},#{laneName},#{createdDate},#{description})"})
-    int addLane(Lane lane);
+    //@SelectKey(before = false,statementType=StatementType.STATEMENT,statement="SELECT LAST_INSERT_ID() AS id",resultType = int.class,keyProperty = "id",keyColumn = "id")
+    int insertLane(Lane lane);
 
     @Select({"select * from " +tableName+" where board_name=#{boardName}"})
     Lane selectByName(String boardName);

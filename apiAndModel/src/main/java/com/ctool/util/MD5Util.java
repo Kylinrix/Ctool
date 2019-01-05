@@ -1,7 +1,6 @@
-package com.ctool.user.util;
+package com.ctool.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.security.MessageDigest;
 
@@ -12,8 +11,6 @@ import java.security.MessageDigest;
  * @Description:
  */
 public class MD5Util {
-    private static final Logger logger = LoggerFactory.getLogger(MD5Util.class);
-
     public static String MD5(String key) {
         char hexDigits[] = {
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
@@ -37,7 +34,7 @@ public class MD5Util {
             }
             return new String(str);
         } catch (Exception e) {
-            logger.error("生成MD5失败", e);
+            System.err.println("生成MD5失败\n"+e);
             return null;
         }
     }

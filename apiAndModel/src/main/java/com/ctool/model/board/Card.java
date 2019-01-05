@@ -20,7 +20,7 @@ public class Card implements Serializable {
 
     private String cardContent;
 
-    private String lastChanger;
+    private int lastChanger;
 
     //按照日期排列。
     private Date createdDate;
@@ -60,11 +60,11 @@ public class Card implements Serializable {
         this.cardContent = cardContent;
     }
 
-    public String getLastChanger() {
+    public int getLastChanger() {
         return lastChanger;
     }
 
-    public void setLastChanger(String latChanger) {
+    public void setLastChanger(int latChanger) {
         this.lastChanger = latChanger;
     }
 

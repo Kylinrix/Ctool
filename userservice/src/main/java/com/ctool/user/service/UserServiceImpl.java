@@ -4,8 +4,8 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.user.dao.UserDAO;
-import com.ctool.user.util.KeyWordUtil;
-import com.ctool.user.util.MD5Util;
+import com.ctool.util.KeyWordUtil;
+import com.ctool.util.MD5Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.ctool.user.util.KeyWordUtil.ORDINARY_USER;
+import static com.ctool.util.KeyWordUtil.ORDINARY_USER;
+
 
 /**
  * @Auther: Kylinrix
@@ -128,7 +129,6 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         else{
-            redisTemplate.delete(key);
             logger.warn("SessionID 与 绑定的 userid 不符 ，已在其它地方登录，请重新登录 ！");
             return false;
         }

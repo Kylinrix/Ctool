@@ -2,6 +2,9 @@ package com.ctool.board.webSocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ctool.board.service.ActionService;
+import com.ctool.board.service.BoardService;
+import com.ctool.util.KeyWordUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -12,10 +15,16 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
@@ -29,20 +38,23 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  **/
 public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
+    ActionService actionService;
+
     //一个 ChannelGroup 代表一个直播频道
     private  static Map<Integer, ChannelGroup> channelGroupMap = new ConcurrentHashMap<>();
 
     private static Long ActiveUser = 0L;
 
-    private final static String REQUEST_ADD = "add";
-    private final static String REQUEST_UPDATE = "update";
-    private final static String REQUEST_DELETE = "delete";
-
-    private final static String ENTITY_TYPE_CARD = "card";
-    private final static String ENTITY_TYPE_LANE = "lane";
 
 
-    private int BoardId = -1;
+
+    private int boardId = -1;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -54,7 +66,8 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        channelGroupMap.get(this.BoardId).remove(ctx.channel());
+        //移除Channel
+        channelGroupMap.get(this.boardId).remove(ctx.channel());
         ActiveUser--;
         System.out.println("Channel退出！总计"+ ActiveUser+"。");
     }
@@ -79,31 +92,61 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         //msg为Json字符串。
         //获取前端发送的命令
         System.out.println("收到消息："+msg.text());
-        JSONObject req = JSON.parseObject(msg.text());
-        Integer boardId = Integer.parseInt(req.get("boardId").toString());
-        //String code = req.get("code").toString();
-        //String id = req.get("id").toString();
-        if(req.containsKey("content"));
-            String content = req.get("content").toString();
+        JSONObject jsonObject = JSON.parseObject(msg.text());
+        String boardId = jsonObject.getString("board_id");
+        String userId = jsonObject.getString("user_id");
 
-        this.BoardId=boardId;
+        //更新用户session超时时间
+        Object loginUserSessionId = redisTemplate.opsForValue().get(userId);
+        redisTemplate.opsForValue().set(userId,
+                loginUserSessionId,
+                KeyWordUtil.LOGINUSER_TIMEOUT,
+                TimeUnit.SECONDS);
+
+
+
+        this.boardId=Integer.parseInt(boardId.substring(2));
         //加入频道
-        if(channelGroupMap.containsKey(boardId)){
-            if(channelGroupMap.get(boardId).find(ctx.channel().id())==null) { channelGroupMap.get(boardId).add(ctx.channel());
-            }
+        if(this.boardId>0&&channelGroupMap.containsKey(this.boardId)){
+            if(channelGroupMap.get(this.boardId).find(ctx.channel().id())==null) { channelGroupMap.get(boardId).add(ctx.channel()); }
         }
         else {
-            channelGroupMap.put(boardId, new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
-            channelGroupMap.get(boardId).add(ctx.channel());
+            channelGroupMap.put(this.boardId, new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
+            channelGroupMap.get(this.boardId).add(ctx.channel());
         }
 
         //业务逻辑
-        //.......
+        //处理数据库逻辑
+        String resJson =null;
+        try {
+            resJson = actionService.handlerJsonCode(msg.text());
+        }
+        catch (Exception e){
+            logger.warn("命令执行错误: "+e.toString());
+        }
 
 
-        //广播
+        //广播,带有两种失败原因
+        //1、更新失败。
+        //2、看板号异常。
         if (channelGroupMap.containsKey(boardId)) {
-            channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame("test服务时间："+ LocalDateTime.now()));
+            if(resJson!=null){
+                channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
+            }
+            else{
+                JSONObject jsonObject1 =new JSONObject();
+                jsonObject1.put("msg","fail");
+                jsonObject1.put("detail","Board update failed.");
+                resJson = jsonObject1.toJSONString();
+                channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
+            }
+        }
+        else{
+            JSONObject jsonObject1 =new JSONObject();
+            jsonObject1.put("msg","fail");
+            jsonObject1.put("msg","The board number is wrong.");
+            resJson = jsonObject1.toJSONString();
+            ctx.channel().writeAndFlush(resJson);
         }
 
         //System.out.println("通道数量："+channelGroupMap.get(boardId).size());
