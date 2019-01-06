@@ -1,9 +1,8 @@
-package com.ctool.user.interceptor;
+package com.ctool.board.interceptor;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
-import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
-import com.ctool.user.model.UserHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +26,20 @@ import javax.servlet.http.HttpSession;
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
-    @Autowired
+    @Reference
     UserService userService;
 
     @Autowired
     RedisTemplate redisTemplate;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        logger.info("login拦截器拦截。");
+        logger.info("login拦截器拦截");
 
         HttpSession session = request.getSession();
 //        //test
         if (session.getAttribute("userId")==null) {response.sendRedirect("http://localhost:8001/test");return false;}
-        System.out.println("session有UserID");
 
+        System.out.println("session有UserID");
         if (session.getAttribute("userId")==null) {
             //强制返回登录页面
             response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURL());

@@ -107,4 +107,9 @@ public class BoardService {
         return boardDAO.selectById(id);
     }
 
+
+    public List<Board> getBoardByUserid (int userId){
+        return boardDAO.selectByUserId(userId);
+    }
+
 }

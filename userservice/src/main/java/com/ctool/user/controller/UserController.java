@@ -158,10 +158,11 @@ public class UserController {
             return JsonUtil.getJSONString(1,"登出异常");
     }
     @ResponseBody
-    @RequestMapping(path={"/test"},method = {RequestMethod.POST})
+    @RequestMapping(path={"/test"},method = {RequestMethod.GET,RequestMethod.POST})
     public String login (Model model,
                          HttpServletResponse response,
                          HttpServletRequest request){
+        System.out.println(request.getSession().getAttribute("userId"));
         return "8001:"+ request.getSession().getId();
     }
 

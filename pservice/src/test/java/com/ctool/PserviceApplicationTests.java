@@ -1,6 +1,7 @@
 package com.ctool;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSONObject;
 import com.ctool.board.dao.BoardDAO;
 import com.ctool.board.dao.CardDAO;
 import com.ctool.board.dao.LaneDAO;
@@ -37,14 +38,7 @@ public class PserviceApplicationTests {
     CardDAO cardDAO;
 
     @Test
-    public void contextLoads() {
-
-
-        //Redis 与 远程Dubbo测试
-//        System.out.println(userService.getUser("1"));
-//        userService.checkAndUpdateIfUserExpired(1,"1234-1234");
-
-
+    public void BoardSqlTest() {
         Board b = new Board();
         b.setBoardName("b1");
         b.setCreatedDate(new Date());
@@ -91,6 +85,23 @@ public class PserviceApplicationTests {
             System.out.println(list.get(i).getCardName());
         }
 
+    }
+    @Test
+    public void remoteTest(){
+        //Redis 与 远程Dubbo测试
+//        System.out.println(userService.getUser("1"));
+//        userService.checkAndUpdateIfUserExpired(1,"1234-1234");
+    }
+
+    @Test
+    public void jsonHandlerTest(){
+
+        JSONObject j =new JSONObject();
+        j.put("code",1);
+        j.put("msg","this is a msg");
+        System.out.println(j.toJSONString());
+        System.out.println(j.toString());
+        System.out.println(j.toJSONString().equals(j.toString()));
     }
 
 
