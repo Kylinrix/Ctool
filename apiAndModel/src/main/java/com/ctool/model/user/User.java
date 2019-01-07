@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String salt;
     private String email;
     private String headUrl;
+
     /**
      * status 用户状态：普通0，管理员1
      */

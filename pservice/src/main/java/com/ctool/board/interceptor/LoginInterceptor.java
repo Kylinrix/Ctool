@@ -3,6 +3,8 @@ package com.ctool.board.interceptor;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.ctool.remoteService.UserService;
+import com.ctool.util.KeyWordUtil;
+import javassist.compiler.ast.Keyword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,21 +38,21 @@ public class LoginInterceptor implements HandlerInterceptor {
         logger.info("login拦截器拦截");
 
         HttpSession session = request.getSession();
-//        //test
-        if (session.getAttribute("userId")==null) {response.sendRedirect("http://localhost:8001/test");return false;}
+       //test
+        //if (session.getAttribute("userId")==null) {response.sendRedirect("http://localhost:8001/test");return false;}
 
         System.out.println("session有UserID");
         if (session.getAttribute("userId")==null) {
             //强制返回登录页面
-            response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURL());
+            response.sendRedirect(KeyWordUtil.LOGIN_PAGE+"?next=" + request.getRequestURL());
             return false;
         }
-        else {
 
+        else {
             int userid = (int)session.getAttribute("userId");
             //检查用户的session情况
             if(!userService.checkAndUpdateIfUserExpired(userid,session.getId())){
-                response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURL());
+                response.sendRedirect(KeyWordUtil.LOGIN_PAGE+"?next=" + request.getRequestURL());
                 return false;
             }
         }

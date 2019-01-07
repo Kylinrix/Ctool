@@ -19,4 +19,6 @@ public class KeyWordUtil {
     public static final String LOGIN_USER_TOEKN_PREFIX = "LOGINUSERTOEKN:";
 
 
+    public static final String LOGIN_PAGE = "http://localhost:8001/signIn";
+
 }

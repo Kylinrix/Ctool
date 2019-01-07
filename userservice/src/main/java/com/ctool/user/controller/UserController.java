@@ -40,6 +40,13 @@ public class UserController {
     @Autowired
     RedisTemplate redisTemplate;
 
+    @RequestMapping(path={"/signIn"},method = {RequestMethod.GET,RequestMethod.POST})
+    public String register (Model model,@RequestParam(value = "next", required = false) String next){
+
+        model.addAttribute("next",next);
+        return "signIn";
+    }
+
     /**
      * 注册
      * @param model
@@ -72,6 +79,7 @@ public class UserController {
                 return JsonUtil.getJSONString(1, map);
             else
                 return JsonUtil.getJSONString(2, map);
+
         }
         catch (Exception e){
             logger.error("注册异常： " + e.getMessage());

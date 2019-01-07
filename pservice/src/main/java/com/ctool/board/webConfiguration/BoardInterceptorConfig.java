@@ -21,7 +21,7 @@ public class BoardInterceptorConfig implements WebMvcConfigurer {
     @Autowired
     LoginInterceptor loginInterceptor;
 
-    private final String boardPath = "/board/*";
+    private final String boardPath = "/board";
 
     public void addInterceptors(InterceptorRegistry registry) {
         //registry.addInterceptor(loginInterceptor).addPathPatterns(userPath);

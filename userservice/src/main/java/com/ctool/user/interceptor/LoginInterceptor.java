@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.user.model.UserHolder;
+import com.ctool.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+
 
 /**
  * @Auther: Kylinrix
@@ -37,13 +40,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         logger.info("login拦截器拦截。");
 
         HttpSession session = request.getSession();
-//        //test
-        if (session.getAttribute("userId")==null) {response.sendRedirect("http://localhost:8001/test");return false;}
-        System.out.println("session有UserID");
+        //test
+        //if (session.getAttribute("userId")==null) {response.sendRedirect("http://localhost:8001/test");return false;}
+        //System.out.println("session有UserID");
 
         if (session.getAttribute("userId")==null) {
             //强制返回登录页面
-            response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURL());
+            response.sendRedirect(KeyWordUtil.LOGIN_PAGE+"?next=" + request.getRequestURL());
             return false;
         }
         else {
@@ -51,7 +54,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             int userid = (int)session.getAttribute("userId");
             //检查用户的session情况
             if(!userService.checkAndUpdateIfUserExpired(userid,session.getId())){
-                response.sendRedirect("http://localhost:8001/login?next=" + request.getRequestURL());
+                response.sendRedirect(KeyWordUtil.LOGIN_PAGE+"?next=" + request.getRequestURL());
                 return false;
             }
         }
