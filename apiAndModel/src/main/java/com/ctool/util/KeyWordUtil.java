@@ -21,4 +21,16 @@ public class KeyWordUtil {
 
     public static final String LOGIN_PAGE = "http://localhost:8001/signIn";
 
+
+    //看板权限，默认是成员可写
+    public static final int BORAD_AUTHORIZATION_MEMBER =0;
+    public static final int BORAD_AUTHORIZATION_ONLY_OWNER =1;
+    public static final int BORAD_AUTHORIZATION_PUBLIC =2;
+
+
+    //看板权限，默认是成员可写
+    public static final int BORAD_USER_ROLE_MEMBER =0;
+    public static final int BORAD_USER_ROLE_OWNER =1;
+    public static final int BORAD_USER_ROLE_BLACKLIST =2;
+
 }

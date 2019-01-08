@@ -12,7 +12,7 @@
 // * @Author: Kylinrix
 // * @Date: 2019/1/6 14:50
 // * @Email: Kylinrix@outlook.com
-// * @Description:
+// * @Description: HTTPRequest 和HTTPResponse 没有序列化，dubbo不能使用
 // */
 //public interface LoginInterceptorService extends HandlerInterceptor {
 //

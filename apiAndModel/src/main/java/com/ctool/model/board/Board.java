@@ -19,6 +19,13 @@ public class Board implements Serializable {
 
     private Date createdDate;
 
+    /**
+     * int 0 成员共享
+     * int 1 私有
+     * int 2 公开
+     */
+    private int authorization;
+
     private String description;
 
     public int getId() {
@@ -59,5 +66,13 @@ public class Board implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public int getAuthorization() {
+        return authorization;
+    }
+
+    public void setAuthorization(int authorization) {
+        this.authorization = authorization;
     }
 }

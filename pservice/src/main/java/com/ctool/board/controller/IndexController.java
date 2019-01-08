@@ -1,19 +1,22 @@
 package com.ctool.board.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSONObject;
 import com.ctool.board.service.ActionService;
 import com.ctool.board.service.BoardService;
+import com.ctool.model.BoardUserRelation;
 import com.ctool.model.ViewObject;
 import com.ctool.model.board.Board;
+import com.ctool.model.user.User;
+import com.ctool.remoteService.UserService;
+import com.ctool.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +35,10 @@ public class IndexController {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
+
+    @Reference
+    UserService userService;
+
     @Autowired
     BoardService boardService;
 
@@ -45,13 +52,14 @@ public class IndexController {
                         HttpServletRequest request, Model model,@PathVariable("boardId") int boardId){
         model.addAttribute("boardId",boardId);
         int userId = (int)request.getSession().getAttribute("userId");
-        if(redisTemplate.opsForSet().isMember(boardId,userId)){
+
+        if(boardService.checkIfBoardAuthorized(boardId,userId)!=0){
+            model.addAttribute("msg","错误，权限不足。您不能访问该看板。");
+            return "error";
+        }
+        else{
             model.addAttribute("userId",userId);
             return "index";
-        }
-        else {
-            model.addAttribute("msg","错误，你不是该看板的成员。");
-            return "error";
         }
     }
 
@@ -69,7 +77,7 @@ public class IndexController {
         List<ViewObject> info = new ArrayList<ViewObject>();
         if(request.getSession().getAttribute("userId")!=null) {
             int userId = (int)request.getSession().getAttribute("userId");
-            List<Board> blist = boardService.getBoardByUserid(userId);
+            List<Board> blist = boardService.getBoardsByUserid(userId);
             for (Board  b:blist) {
                 ViewObject vo = new ViewObject();
                 vo.set("boardId","b_"+String.valueOf(b.getId()));
@@ -83,6 +91,41 @@ public class IndexController {
         }
         return "error";
     }
+
+    /**
+     * @Author: Kylinrix
+     * @param: [model, response, request, code, boardId]
+     *          以下是code的三种值。
+     *           BORAD_AUTHORIZATION_MEMBER =0;
+     *           BORAD_AUTHORIZATION_ONLY_OWNER =1;
+     *           BORAD_AUTHORIZATION_PUBLIC =2;
+     * @return: java.lang.String
+     * @Date: 2019/1/8
+     * @Email: Kylinrix@outlook.com
+     * @Description:
+     */
+    @ResponseBody
+    @RequestMapping(path={"/changeAuthorization"},method = {RequestMethod.GET,RequestMethod.POST})
+    public String changeAuthorization (Model model,
+                         HttpServletResponse response,
+                         HttpServletRequest request,@RequestParam("authorization") int code,
+                                       @RequestParam("boardId") String boardId){
+
+
+        int userId = (int)request.getSession().getAttribute("userId");
+        Board board =boardService.getBoard(Integer.parseInt(boardId.substring(2)));
+        if(board.getOwnUserId() == userId){
+            boardService.updateBoardAuthorization(board.getId(),code);
+            return JsonUtil.getJSONString(0);
+        }
+        else return JsonUtil.getJSONString(1,"fail","用户没有权限更改看板授权。");
+    }
+
+
+
+
+
+
 
     @ResponseBody
     @RequestMapping(path={"/test"},method = {RequestMethod.GET,RequestMethod.POST})

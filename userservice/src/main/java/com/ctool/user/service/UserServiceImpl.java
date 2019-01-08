@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +40,14 @@ public class UserServiceImpl implements UserService {
     RedisTemplate redisTemplate;
 
     @Override
-    public User getUser(int id) { return userDAO.selectById(id); }
+    public User getUserById(int id) { return userDAO.selectById(id); }
 
     @Override
-    public User getUser(String name) { return userDAO.selectByName(name); }
+    public User getUserByName(String name) { return userDAO.selectByName(name); }
 
+
+    @Override
+    public User getUserByEmail(String email) { return userDAO.selectByEmail(email); }
 
     @Override
     public int addUser(User user) { return userDAO.addUser(user); }
@@ -65,6 +69,7 @@ public class UserServiceImpl implements UserService {
             return context;
         }
 
+
         User regUser = new User();
         regUser.setName(name);
         regUser.setSalt(UUID.randomUUID().toString().substring(0, 5).toLowerCase());
@@ -78,6 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(String name, String pwd) {
         Map<String, Object> map = new HashMap<String, Object>();
+
         if (StringUtils.isEmpty(name)||StringUtils.containsWhitespace(name)) {
             map.put("msg", "用户名不能为空");
             return map;
@@ -88,6 +94,7 @@ public class UserServiceImpl implements UserService {
             return map;
         }
 
+        name = HtmlUtils.htmlEscape(name);
         User user = userDAO.selectByName(name);
 
         if (user == null) {

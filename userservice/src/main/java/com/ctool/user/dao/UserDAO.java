@@ -31,4 +31,7 @@ public interface UserDAO {
     @Select({"select ", selectFields, " from ", tableName, " where id=#{id}"})
     User selectById(int id);
 
+    @Select({"select ", selectFields, " from ", tableName, " where email=#{email}"})
+    User selectByEmail(String email);
+
 }

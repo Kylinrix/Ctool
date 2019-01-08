@@ -97,6 +97,8 @@ public class ActionService {
 
 
 
+
+
     /**
      * @Auther: Kylinrix
      * @param: [entity, jsonObject]
@@ -118,6 +120,7 @@ public class ActionService {
             if(entityType.equals(ENTITY_TYPE_BOARD))jsonObject.put("board_id","b_"+String.valueOf(((Board)entity).getId()));
         }
         jsonObject.put("msg","success");
+        jsonObject.put("code",0);
         return jsonObject.toJSONString();
     }
 

@@ -18,17 +18,17 @@ public interface BoardDAO {
                     " id," +
                     "own_user_id," +
                     "board_name," +
-                    "created_date," +
+                    "created_date,"+ "authorization,"+
                     "description ";
 
-    String insertFields = " own_user_id,board_name,created_date,description ";
+    String insertFields = " own_user_id,board_name,created_date,authorization,description ";
 
 
     @Insert({"insert into "
             ,tableName,
             "(",
             insertFields,
-            ") values(#{ownUserId},#{boardName},#{createdDate},#{description})"})
+            ") values(#{ownUserId},#{boardName},#{createdDate},#{authorization},#{description})"})
     //@SelectKey(before = false,statement="SELECT LAST_INSERT_ID() AS ID",resultType = int.class,keyProperty = "id",keyColumn = "id")
     int insertBoard(Board board);
 
@@ -43,4 +43,9 @@ public interface BoardDAO {
 
     @Delete({"delete from "+tableName + " where id =#{id}"})
     int deleteById(int id);
+
+    @Update({"update ", tableName, " " +
+            " set authorization=#{code} " +
+            " where id=#{boardId} "})
+    int  updateAuthorization(@Param("boardId") int boardId,@Param("code")int code);
 }

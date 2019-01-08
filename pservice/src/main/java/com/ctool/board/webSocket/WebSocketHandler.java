@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ctool.board.service.ActionService;
 import com.ctool.board.service.BoardService;
+import com.ctool.util.JsonUtil;
 import com.ctool.util.KeyWordUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -105,6 +106,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
 
 
+
         this.boardId=Integer.parseInt(boardId.substring(2));
         //加入频道
         if(this.boardId>0&&channelGroupMap.containsKey(this.boardId)){
@@ -134,18 +136,12 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
                 channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
             }
             else{
-                JSONObject jsonObject1 =new JSONObject();
-                jsonObject1.put("msg","fail");
-                jsonObject1.put("detail","Board update failed.");
-                resJson = jsonObject1.toJSONString();
+                resJson = JsonUtil.getJSONString(1,"fail","Board update failed");
                 channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
             }
         }
         else{
-            JSONObject jsonObject1 =new JSONObject();
-            jsonObject1.put("msg","fail");
-            jsonObject1.put("msg","The board number is wrong.");
-            resJson = jsonObject1.toJSONString();
+            resJson = JsonUtil.getJSONString(1,"fail","The board number is wrong or not existed.");
             ctx.channel().writeAndFlush(resJson);
         }
 

@@ -1,17 +1,22 @@
 package com.ctool.board.service;
 
 import com.ctool.board.dao.BoardDAO;
+import com.ctool.board.dao.BoardUserRelationDAO;
 import com.ctool.board.dao.CardDAO;
 import com.ctool.board.dao.LaneDAO;
 import com.ctool.board.webSocket.BoardNettyServer;
+import com.ctool.model.BoardUserRelation;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
+import com.ctool.model.user.User;
+import com.ctool.util.KeyWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -20,7 +25,7 @@ import java.util.List;
 /**
  * @program: Ctool
  * @description:
- * @author: KyLee
+ * @author: Kylinrix
  * @create: 2019-01-03 21:38
  **/
 @Service
@@ -36,9 +41,20 @@ public class BoardService {
     @Autowired(required = false)
     LaneDAO laneDAO;
 
+    @Autowired(required = false)
+    BoardUserRelationDAO boardUserRelationDAO;
+
+    @Transactional
     public Board addBoard(@NotNull String boardName, @NotNull int userId, String description){
 
         Board b = new Board();
+
+        //HTML过滤
+        boardName = HtmlUtils.htmlEscape(boardName);
+        description = HtmlUtils.htmlEscape(description);
+
+        //默认为成员可见
+        b.setAuthorization(KeyWordUtil.BORAD_AUTHORIZATION_MEMBER);
         b.setBoardName(boardName);
         //日期编码默认为SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
         // "yyyy-MM-dd HH:mm:ss"
@@ -48,6 +64,14 @@ public class BoardService {
 
         //mybatis Insert会把导入的对象加上自增的ID。
         boardDAO.insertBoard(b);
+
+        //增加关系表
+        BoardUserRelation boardUserRelation = new BoardUserRelation();
+        boardUserRelation.setBoardId(b.getId());
+        boardUserRelation.setUserId(b.getOwnUserId());
+        boardUserRelation.setUserRole(KeyWordUtil.BORAD_USER_ROLE_OWNER);
+        boardUserRelation.setCreatedDate(new Date());
+        boardUserRelationDAO.insertBoardUserRelation(boardUserRelation);
         return b;
     }
 
@@ -60,6 +84,11 @@ public class BoardService {
 
 
     public Lane addLane(@NotNull int boardId,String name,String description){
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        description = HtmlUtils.htmlEscape(description);
+
+
         Lane lane = new Lane();
         lane.setBoardId(boardId);
         lane.setCreatedDate(new Date());
@@ -74,13 +103,21 @@ public class BoardService {
         return false;
     }
 
-    public Card addCard(@NotNull int laneId,String name,int userId,String CardContent,String description) {
+    public Card addCard(@NotNull int laneId,String name,int userId,String cardContent,String description) {
+
+
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        cardContent =HtmlUtils.htmlEscape(cardContent);
+        description = HtmlUtils.htmlEscape(description);
+
+
         Card card = new Card();
         card.setCardName(name);
         card.setLaneId(laneId);
         card.setCreatedDate(new Date());
         card.setLastChanger(userId);
-        card.setCardContent(CardContent);
+        card.setCardContent(cardContent);
         card.setDescription(description);
         cardDAO.insertCard(card);
         return card;
@@ -92,8 +129,13 @@ public class BoardService {
     }
 
     public boolean  updateCard(@NotNull int cardId,String name,int userId,String cardContent,String description){
-      if(cardDAO.updateCard(cardId,name,userId,cardContent,description)>0)return true;
-      else return false;
+
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        cardContent =HtmlUtils.htmlEscape(cardContent);
+        description = HtmlUtils.htmlEscape(description);
+        if(cardDAO.updateCard(cardId,name,userId,cardContent,description)>0)return true;
+        else return false;
     }
 
     public Card getCard(int id){
@@ -108,8 +150,99 @@ public class BoardService {
     }
 
 
-    public List<Board> getBoardByUserid (int userId){
-        return boardDAO.selectByUserId(userId);
+    public List<Board> getBoardsByUserid (int userId){
+        return boardUserRelationDAO.selectBoardsByUserId(userId);
     }
+
+    public List<User> getMemberByBoardId (int boardId){
+        return boardUserRelationDAO.selectUsersByBoardId(boardId);
+    }
+
+
+    public boolean updateBoardAuthorization(int boardId,int code){
+        if(boardDAO.updateAuthorization(boardId,code)>0) return true;
+        else return false;
+    }
+
+    /**
+     * @Author: Kylinrix
+     * @param: [boardId, userId]
+     * @return: boolean
+     * @Date: 2019/1/8
+     * @Email: Kylinrix@outlook.com
+     * @Description: 添加看板成员
+     */
+
+    public BoardUserRelation addBoardMember(int boardId,int userId){
+        BoardUserRelation boardUserRelation = new BoardUserRelation();
+        boardUserRelation.setBoardId(boardId);
+        boardUserRelation.setUserId(userId);
+        boardUserRelation.setUserRole(KeyWordUtil.BORAD_USER_ROLE_MEMBER);
+        boardUserRelation.setCreatedDate(new Date());
+        boardUserRelationDAO.insertBoardUserRelation(boardUserRelation);
+        return boardUserRelation;
+    }
+
+    /**
+     * @Author: Kylinrix
+     * @param: [boardId, userId]
+     * @return: boolean
+     * @Date: 2019/1/8
+     * @Email: Kylinrix@outlook.com
+     * @Description: 移除看板成员
+     */
+    public boolean removeBoardMember(int boardId,int userId){
+
+
+        if(boardUserRelationDAO.deleteBoardAndUserRelation(boardId,userId)>0)return true;
+        return false;
+    }
+
+
+    /**
+     * @Auther: lky
+     * @param: [boardId, userId]
+     * @return: int
+     * 返回值 0 : 权限通过
+     *       1 : 非成员
+     *       2 : 黑名单
+     * @Date: 2019/1/8
+     * @Email: Kylinrix@outlook.com
+     * @Description: 检查用户是否可以进入看板页
+     *
+     */
+    public int checkIfBoardAuthorized(int boardId ,int userId){
+        Board board =boardDAO.selectById(boardId);
+        if(board.getAuthorization()==KeyWordUtil.BORAD_AUTHORIZATION_ONLY_OWNER){
+            if(board.getOwnUserId()!=userId)return -1;
+            else return 0;
+        }
+        BoardUserRelation boardUserRelation = boardUserRelationDAO.selectBoardAndUserRelation(boardId,userId);
+        if(board.getAuthorization()==KeyWordUtil.BORAD_AUTHORIZATION_PUBLIC){
+            if(boardUserRelation!=null){ if(boardUserRelation.getUserRole()==KeyWordUtil.BORAD_USER_ROLE_BLACKLIST) return 2; }
+            return 0;
+        }
+        if(board.getAuthorization()==KeyWordUtil.BORAD_AUTHORIZATION_MEMBER){
+            if(boardUserRelation!=null){ if(boardUserRelation.getUserRole()==KeyWordUtil.BORAD_USER_ROLE_BLACKLIST) return 2; }
+            else if(boardUserRelation==null) return 1;
+            else return 0;
+        }
+        return 0;
+    }
+
+    /**
+     * @Author: Kylinrix
+     * @param: [boardId, userId]
+     * @return: boolean
+     * @Date: 2019/1/8
+     * @Email: Kylinrix@outlook.com
+     * @Description: 检查是否为看板成员
+     */
+    public boolean checkIsBoardMember(int boardId ,int userId){
+        BoardUserRelation boardUserRelation =  boardUserRelationDAO.selectBoardAndUserRelation(boardId,userId);
+        if(boardUserRelation==null)return false;
+        else return true;
+    }
+
 
 }

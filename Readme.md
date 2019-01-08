@@ -11,13 +11,15 @@
 - pservice：项目管理，Board-Lane-Card结构，使用netty+websocket实现。
 
 ### 配置
-mysql - 默认端口3306
-zookeeper 默认端口2181
-redis 默认端口6379
+- mysql - 默认端口3306
+
+- zookeeper 默认端口2181
+
+- redis 默认端口6379
 
 ### 数据库
 
-/pservice/src/test/resources/Board-init.sql
+MYSQL DUMP  /pservice/src/test/resources/Board-init.sql
 
 - 四个表User，Board，Lane，Card
 - 其中包含有外键约束
@@ -29,18 +31,17 @@ redis 默认端口6379
 
 ##### json 格式
 
-|   属性名    |             格式              |  类型  |          作用           |           是否必需            |
-| :---------: | :---------------------------: | :----: | :---------------------: | :---------------------------: |
-|  board_id   |           b_112233            | String |         看板ID          |              是               |
-|   user_id   |            112233             | String |         用户ID          |              是               |
-|   action    | "update"/"delete"/"insert"... | String |    N者取一，规定动作    |              是               |
-|   entity    |   "card"/"lane",/board"....   | String | N者取一，规定操作的类型 |              是               |
-|   card_id   |           c_112233            | String |         卡片ID          |              否               |
-|   lane_id   |           l_112233            | String |         泳道ID          | 否，注意添加card时必有lane_id |
-|   content   |             xxxxx             | String |          内容           |              否               |
-| description |             xxxxx             | String |          描述           |              否               |
-|     msg     |         success/fail          | String |   描述后台操作的结果    |         后台必须提供          |
-|   detail    |            xxxxxx             | String | 描述后台操作失败的描述  |       msg为fail时存在。       |
+|   属性名    |             格式              |  类型  |          作用           |           是否必需            |               备注                |
+| :---------: | :---------------------------: | :----: | :---------------------: | :---------------------------: | :-------------------------------: |
+|  board_id   |           b_112233            | String |         看板ID          |              是               |       前端页面应保有该属性        |
+|   user_id   |            112233             | String |         用户ID          |              是               |       前端页面应保有该属性        |
+|   action    | "update"/"delete"/"insert"... | String |    N者取一，规定动作    |              是               |                无                 |
+|   entity    |   "card"/"lane",/board"....   | String | N者取一，规定操作的类型 |              是               |                无                 |
+|   card_id   |           c_112233            | String |         卡片ID          |              否               | insert card操作时后端会添加该字段 |
+|   lane_id   |           l_112233            | String |         泳道ID          | 否，注意添加card时必有lane_id | insert lane操作时后端会添加该字段 |
+|   content   |             xxxxx             | String |          内容           |              否               |           后端HTML过滤            |
+| description |             xxxxx             | String |          描述           |              否               |           后端HTML过滤            |
+|     msg     |         success/fail          | String |   描述后台操作的结果    |         后台必须提供          |             成功标志              |
 
 
 

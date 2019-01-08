@@ -22,6 +22,13 @@ public class JsonUtil {
         json.put("code",code);
         return json.toString();
     }
+    public static String getJSONString(int code,String msg,String detail){
+        JSONObject json = new JSONObject();
+        json.put("code",code);
+        json.put("msg",msg);
+        json.put("detail",detail);
+        return json.toString();
+    }
     public static String getJSONString(int code, Map<String ,Object> map) {
         JSONObject json = new JSONObject();
         json.put("code", code);
@@ -30,4 +37,23 @@ public class JsonUtil {
         }
         return json.toString();
     }
+    public static String getJSONString(int code, JSONObject jsonObject) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+            json.put(entry.getKey(), entry.getValue());
+        }
+        return json.toString();
+    }
+
+    public static String getJSONString(int code, String msg,JSONObject jsonObject) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        json.put("msg",msg);
+        for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+            json.put(entry.getKey(), entry.getValue());
+        }
+        return json.toString();
+    }
+
 }
