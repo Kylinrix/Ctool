@@ -200,7 +200,7 @@ public class BoardService {
 
 
     /**
-     * @Auther: lky
+     * @Author: lky
      * @param: [boardId, userId]
      * @return: int
      * 返回值 0 : 权限通过

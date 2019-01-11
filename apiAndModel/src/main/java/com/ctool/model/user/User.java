@@ -17,7 +17,7 @@ public class User implements Serializable {
     private String headUrl;
 
     /**
-     * status 用户状态：普通0，管理员1
+     * status 用户状态：未验证 0，已验证 1
      */
     private int status;
 

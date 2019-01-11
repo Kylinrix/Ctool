@@ -53,6 +53,12 @@ public class UserServiceImpl implements UserService {
     public int addUser(User user) { return userDAO.addUser(user); }
 
     @Override
+    public boolean updateUserStatus(int id,int status) {
+        if(userDAO.updateUserStatus(id,status)>0)return true;
+        else return false;
+    }
+
+    @Override
     public Map<String, Object> register(String name, String pwd, String email, String HeadUrl) {
         Map<String,Object> context = new HashMap<String,Object>();
         if (StringUtils.isEmpty(name)||StringUtils.containsWhitespace(name)){
@@ -110,6 +116,7 @@ public class UserServiceImpl implements UserService {
         map.put("user", user);
         return map;
     }
+
 
     //其他微服务查看登录用户是否过期
     @Override

@@ -33,4 +33,9 @@ public class KeyWordUtil {
     public static final int BORAD_USER_ROLE_OWNER =1;
     public static final int BORAD_USER_ROLE_BLACKLIST =2;
 
+
+    //kafka服务Topic
+    //发送消息时，自动配置
+    public static final String KAFKA_MAIL_TOPIC = "VerifyMail";
+
 }

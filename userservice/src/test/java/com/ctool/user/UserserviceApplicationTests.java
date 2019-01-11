@@ -1,6 +1,11 @@
 package com.ctool.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ctool.remoteService.UserService;
+import com.ctool.user.event.EventConsumer;
+import com.ctool.user.event.EventProvider;
+import com.ctool.user.service.MailService;
+import com.ctool.util.KeyWordUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,13 @@ public class UserserviceApplicationTests {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    EventProvider eventProvider;
+
+    @Autowired
+    MailService mailService;
+
     @Test
     public void contextLoads() {
 //        User user = new User();
@@ -27,6 +39,14 @@ public class UserserviceApplicationTests {
 //        userService.addUser(user);
 
         //userService.register("1","1","qq.com","");
+
+        //mailService.sendVerifyMail(1,"testMy","1248378280@qq.com");
+    }
+
+    @Test
+    public void MailTest() {
+        System.out.println("-------------------- 邮件服务测试 -------------------------");
+        mailService.sendVerifyMail(1,"testMy","1248378280@qq.com");
     }
 
 }

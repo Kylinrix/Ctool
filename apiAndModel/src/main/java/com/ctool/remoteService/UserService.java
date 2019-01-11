@@ -16,6 +16,7 @@ public interface UserService {
     public User getUserByName(String name);
     public User getUserByEmail(String email);
     public int addUser(User user);
+    public boolean updateUserStatus(int id,int status);
     public Map<String,Object> register(String name, String pwd, String email, String HeadUrl);
     public Map<String,Object> login(String name, String pwd);
     public boolean checkAndUpdateIfUserExpired(int userid, String sessionId);

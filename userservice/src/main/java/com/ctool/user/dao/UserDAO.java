@@ -5,6 +5,7 @@ import com.ctool.model.user.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * @Auther: Kylinrix
@@ -33,5 +34,8 @@ public interface UserDAO {
 
     @Select({"select ", selectFields, " from ", tableName, " where email=#{email}"})
     User selectByEmail(String email);
+
+    @Update("update "+tableName+" set status=#{status} where id=#{id}")
+    int updateUserStatus(int id,int status);
 
 }

@@ -64,7 +64,7 @@ public class IndexController {
     }
 
     /**
-     * @Auther: Kylinrix
+     * @Author: Kylinrix
      * @param: [response, request, model]
      * @return: java.lang.String
      * @Date: 2019/1/6
@@ -132,6 +132,7 @@ public class IndexController {
     public String login (Model model,
                          HttpServletResponse response,
                          HttpServletRequest request){
+        
 
         System.out.println(request.getSession().getAttribute("userId"));
         return "8002:"+ request.getSession().getId();
