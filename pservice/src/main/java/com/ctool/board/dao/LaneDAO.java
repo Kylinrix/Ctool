@@ -34,13 +34,13 @@ public interface LaneDAO {
     //@SelectKey(before = false,statementType=StatementType.STATEMENT,statement="SELECT LAST_INSERT_ID() AS id",resultType = int.class,keyProperty = "id",keyColumn = "id")
     int insertLane(Lane lane);
 
-    @Select({"select * from " +tableName+" where board_name=#{boardName}"})
-    Lane selectByName(String boardName);
+    @Select({"select * from " +tableName+" where lane_name=#{laneName}"})
+    Lane selectByName(String laneName);
 
     @Select({"select ", selectFields, " from ", tableName, " where id=#{id}"})
     Lane selectById(int id);
 
-    @Select({"select * form "+tableName+" where board_id = #{BoardId} order by created_date ASC "})
+    @Select({"select * form "+tableName+" where board_id = #{boardId} order by created_date ASC "})
     List<Lane> selectByBoardId(int boardId);
 
     @Delete({"delete from "+tableName + " where id =#{id}"})

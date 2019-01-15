@@ -1,14 +1,12 @@
 package com.ctool.board.service;
 
-import com.ctool.board.dao.BoardDAO;
-import com.ctool.board.dao.BoardUserRelationDAO;
-import com.ctool.board.dao.CardDAO;
-import com.ctool.board.dao.LaneDAO;
+import com.ctool.board.dao.*;
 import com.ctool.board.webSocket.BoardNettyServer;
 import com.ctool.model.BoardUserRelation;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
+import com.ctool.model.board.Panel;
 import com.ctool.model.user.User;
 import com.ctool.util.KeyWordUtil;
 import org.slf4j.Logger;
@@ -36,14 +34,19 @@ public class BoardService {
     BoardDAO boardDAO;
 
     @Autowired(required = false)
-    CardDAO cardDAO;
+    LaneDAO laneDAO;
 
     @Autowired(required = false)
-    LaneDAO laneDAO;
+    PanelDAO panelDAO;
+
+    @Autowired(required = false)
+    CardDAO cardDAO;
+
 
     @Autowired(required = false)
     BoardUserRelationDAO boardUserRelationDAO;
 
+    //board
     @Transactional
     public Board addBoard(@NotNull String boardName, @NotNull int userId, String description){
 
@@ -64,7 +67,6 @@ public class BoardService {
 
         //mybatis Insert会把导入的对象加上自增的ID。
         boardDAO.insertBoard(b);
-
         //增加关系表
         BoardUserRelation boardUserRelation = new BoardUserRelation();
         boardUserRelation.setBoardId(b.getId());
@@ -81,8 +83,33 @@ public class BoardService {
         if(boardDAO.deleteById(boardId)>0)return true;
         return false;
     }
+    public boolean  updateBoard(@NotNull int boardId,String name,String description){
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        description = HtmlUtils.htmlEscape(description);
+
+        if(boardDAO.updateBoardProfile(boardId,name,description)>0)return true;
+        else return false;
+    }
+
+    /**
+     * @Author: Kylinrix
+     * @param: [boardId, code]
+     * @return: boolean
+     * @Date: 2019/1/15
+     * @Email: Kylinrix@outlook.com
+     * @Description: 改变看板属性，int 0:成员共享  int 1:私有   int 2:公开
+     */
+    public boolean updateBoardAuthorization(int boardId,int code){
+
+        if(boardDAO.updateAuthorization(boardId,code)>0) return true;
+        else return false;
+    }
 
 
+
+
+    //lane
     public Lane addLane(@NotNull int boardId,String name,String description){
         //HTML过滤
         name = HtmlUtils.htmlEscape(name);
@@ -103,6 +130,39 @@ public class BoardService {
         return false;
     }
 
+
+
+    //panel
+    public Panel addPanel(@NotNull int laneId,String name,String description){
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        description = HtmlUtils.htmlEscape(description);
+
+
+        Panel panel = new Panel();
+        panel.setLaneId(laneId);
+        panel.setPanelName(name);
+        panel.setCreatedDate(new Date());
+        panel.setDescription(description);
+        panelDAO.insertPanel(panel);
+        return panel;
+    }
+
+    public boolean deletePanel(@NotNull int panelId){
+        if(panelDAO.deleteById(panelId)>0)return true;
+        return false;
+    }
+    public boolean  updatePanel(@NotNull int cardId,String name,String description){
+
+        //HTML过滤
+        name = HtmlUtils.htmlEscape(name);
+        description = HtmlUtils.htmlEscape(description);
+        if(panelDAO.updateCard(cardId,name,description)>0)return true;
+        else return false;
+    }
+
+
+    //card
     public Card addCard(@NotNull int laneId,String name,int userId,String cardContent,String description) {
 
 
@@ -128,6 +188,7 @@ public class BoardService {
         return false;
     }
 
+
     public boolean  updateCard(@NotNull int cardId,String name,int userId,String cardContent,String description){
 
         //HTML过滤
@@ -138,18 +199,20 @@ public class BoardService {
         else return false;
     }
 
+    //getter
     public Card getCard(int id){
         return cardDAO.selectById(id);
     }
-
     public Lane getLane(int id){
         return laneDAO.selectById(id);
     }
     public Board getBoard (int id){
         return boardDAO.selectById(id);
     }
+    public Panel getPanel (int id){return panelDAO.selectById(id);}
 
 
+    //relation
     public List<Board> getBoardsByUserid (int userId){
         return boardUserRelationDAO.selectBoardsByUserId(userId);
     }
@@ -159,10 +222,7 @@ public class BoardService {
     }
 
 
-    public boolean updateBoardAuthorization(int boardId,int code){
-        if(boardDAO.updateAuthorization(boardId,code)>0) return true;
-        else return false;
-    }
+
 
     /**
      * @Author: Kylinrix
@@ -192,11 +252,11 @@ public class BoardService {
      * @Description: 移除看板成员
      */
     public boolean removeBoardMember(int boardId,int userId){
-
-
         if(boardUserRelationDAO.deleteBoardAndUserRelation(boardId,userId)>0)return true;
         return false;
     }
+
+
 
 
     /**

@@ -45,13 +45,22 @@ public class IndexController {
     @Autowired
     RedisTemplate redisTemplate;
 
-    //加入boardId与userId
-    //一般情况下，实现了Session共享的服务可以直接从session中得到userId。
+
+    /**
+     * @Author: Kylinrix
+     * @param: [response, request, model, boardId]
+     * @return: java.lang.String
+     * @Date: 2019/1/15
+     * @Email: Kylinrix@outlook.com
+     * @Description: 返回的页面需要有Board的所有数据 ，包括lanes、panels、cards、members，
+     *                  这里使用模板还是JSON？
+     */
     @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.GET})
     public String index(HttpServletResponse response,
                         HttpServletRequest request, Model model,@PathVariable("boardId") int boardId){
         model.addAttribute("boardId",boardId);
         int userId = (int)request.getSession().getAttribute("userId");
+
 
         if(boardService.checkIfBoardAuthorized(boardId,userId)!=0){
             model.addAttribute("msg","错误，权限不足。您不能访问该看板。");
@@ -69,7 +78,7 @@ public class IndexController {
      * @return: java.lang.String
      * @Date: 2019/1/6
      * @Email: Kylinrix@outlook.com
-     * @Description:加载用户所拥有的看板，后期可以增加用户关联的看板。
+     * @Description:加载用户所关联的看板
      */
     @RequestMapping(path = {"/board"},method = {RequestMethod.GET,RequestMethod.POST})
     public String userBoard(HttpServletResponse response,

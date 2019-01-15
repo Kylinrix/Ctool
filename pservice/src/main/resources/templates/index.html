@@ -44,6 +44,7 @@
 
         var js = {boardId:"1",content:message}
         //当websocket状态打开
+
         if(socket.readyState == WebSocket.OPEN){
             socket.send(JSON.stringify(js));
         }else{
@@ -59,7 +60,6 @@
     <h3>服务器输出：</h3>
 
     <textarea id ="responseText" style="width: 400px;height: 300px;"></textarea>
-
     <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空数据">
 </form>
 </body>

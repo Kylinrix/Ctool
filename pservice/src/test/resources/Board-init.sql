@@ -106,6 +106,32 @@ LOCK TABLES `lane` WRITE;
 UNLOCK TABLES;
 
 
+--
+-- Table structure for table `panel`
+--
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `panel`;
+SET FOREIGN_KEY_CHECKS = 1;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+SET character_set_client = utf8mb4 ;
+CREATE TABLE `panel` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `lane_id` int(10) unsigned NOT NULL,
+  `panel_name` varchar(45) NOT NULL,
+  `created_date` datetime NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idnew_table_UNIQUE` (`id`),
+  KEY `panel_fk_lane_id` (`lane_id`),
+  CONSTRAINT `panel_fk_lane_id` FOREIGN KEY (`lane_id`) REFERENCES `lane` (`id`)ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+LOCK TABLES `panel` WRITE;
+/*!40000 ALTER TABLE `panel` DISABLE KEYS */;
+/*!40000 ALTER TABLE `panel` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 --
 -- Table structure for table `card`
@@ -117,7 +143,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 SET character_set_client = utf8mb4 ;
 CREATE TABLE `card` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `lane_id` int(10) unsigned NOT NULL,
+  `panel_id` int(10) unsigned NOT NULL,
   `card_name` varchar(45) NOT NULL,
   `card_content` text NOT NULL,
   `last_changer` int(10)unsigned NOT NULL,
@@ -125,8 +151,8 @@ CREATE TABLE `card` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idnew_table_UNIQUE` (`id`),
-  KEY `fk_lane_id` (`lane_id`),
-  CONSTRAINT `fk_lane_id` FOREIGN KEY (`lane_id`) REFERENCES `lane` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `fk_panel_id` (`panel_id`),
+  CONSTRAINT `fk_panel_id` FOREIGN KEY (`panel_id`) REFERENCES `panel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   KEY `fk_user_id` (`last_changer`),
   CONSTRAINT `fk_user_id` FOREIGN KEY (`last_changer`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 
@@ -182,3 +208,4 @@ CREATE TABLE `board_user_relation`(
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2018-12-27 15:48:03
+

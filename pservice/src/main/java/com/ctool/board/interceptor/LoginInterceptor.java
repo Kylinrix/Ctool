@@ -52,6 +52,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             int userid = (int)session.getAttribute("userId");
             //检查用户的session情况
             if(!userService.checkAndUpdateIfUserExpired(userid,session.getId())){
+                logger.warn("用户 "+userid + " 已在其他地方登录。Redis session缓存已过期");
                 response.sendRedirect(KeyWordUtil.LOGIN_PAGE+"?next=" + request.getRequestURL());
                 return false;
             }

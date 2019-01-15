@@ -98,6 +98,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         String userId = jsonObject.getString("user_id");
 
         //更新用户session超时时间
+        //仍然需要拿到sessionId。。。。
         Object loginUserSessionId = redisTemplate.opsForValue().get(userId);
         redisTemplate.opsForValue().set(userId,
                 loginUserSessionId,

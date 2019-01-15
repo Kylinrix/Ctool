@@ -48,4 +48,10 @@ public interface BoardDAO {
             " set authorization=#{code} " +
             " where id=#{boardId} "})
     int  updateAuthorization(@Param("boardId") int boardId,@Param("code")int code);
+
+    @Update({"update ", tableName, " " +
+            " set board_name=#{name} " +
+            " set description = #{description} "+
+            " where id=#{boardId} "})
+    int  updateBoardProfile(@Param("boardId") int boardId,@Param("name")String name,@Param("description")String description );
 }
