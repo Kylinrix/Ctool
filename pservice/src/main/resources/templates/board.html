@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>看板</title>
+    <!-静态web，后期在onmessage方法里添加对应方法，再在各方法里接受json字符串即可-->
 </head>
 <style type="text/css">
     .msg_board {
@@ -34,26 +35,27 @@
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
         background-color: #89D7F7;
     }
-    /*set srcoll end*/
+
+    .div-inline{
+        display:inline
+    }
 </style>
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
 <body>
 <div id="board" class="msg_board"></div>
 <!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
-<input type="text" name="card_content"/>
-<input type="button" value="增加泳道" onclick="add_lane()" /><br>
-<input type="text" id="delete_test"/>
-<input type="button" value="删除泳道" onclick="delete_lane()"/><br>
-<!--卡片容器 测试-->
-<div id="lane_container"></div>
+<input type="button" value="增加泳道" onclick="add_lane()" />
+<input type="text" id="add_lane_test"/><br>
+<input type="button" value="删除泳道" onclick="delete_lane()"/>
+<input type="text" id="delete_lane_test"/><br>
+<input type="button" value="测试专用" onclick="test()"/>
 
 </body>
 <script type="text/javascript" th:inline="javascript">
-    var webSocket;
-    var board_id, user_id, action, entity, card_id, panel_id, lane_id, content, description;
+    // var webSocket;
+    // var board_id, user_id, action, entity, card_id, panel_id, lane_id, content, description;
     //var r_name = [[${boardName}]];
-    var test_lane_id = -1;
     var lane_ids = [];
 
     // function setJSONObj(content){
@@ -70,19 +72,44 @@
     //     return JSON.stringify(data);
     // }
 
+    function test(){
+        alert(lane_ids.length);
+    }
+
+    //增加泳道，自动添加四个panel（模仿leangoo）
     function add_lane() {
         // if(webSocket != null){
         var div = document.getElementById("board");
         var label = document.createElement("input");
-        test_lane_id++;
-        lane_ids.push("l"+test_lane_id);
-        label.value = "lane"+test_lane_id;
-        label.innerText = "lane"+test_lane_id.toString();
+        //测试 获取泳道 id
+        var id = document.getElementById("add_lane_test").value;
         var div_label = document.createElement("div");
-        div_label.setAttribute("id", "l"+test_lane_id.toString());
+        lane_ids.push(id);
+        label.value = "lane_id:"+id;
+        //测试，显示泳道 id
+        div_label.appendChild(label);
+        div_label.appendChild(document.createElement("br"));
+        for(var i = 0 ; i <= 3 ; i++){
+            var panel = document.createElement("div");
+            //测试，根据lane_id形成panel_id，后面从json中获取
+            panel.setAttribute("id",id+"_"+i.toString());
+            //并列显示div
+            panel.setAttribute("class", "div-inline");
+            panel.setAttribute("style", "margin-right:5px");
+            var t = document.createElement("input");
+            t.value = "panel"+i.toString();
+            panel.appendChild(t);
+            var button = document.createElement("input");
+            button.setAttribute("type", "button");
+            button.setAttribute("value", "增加卡片");
+            button.setAttribute("onclick", "add_card()");
+            button.setAttribute("style", "margin-right:15px");
+            div_label.appendChild(panel);
+            div_label.appendChild(button);
+        }
+        div_label.setAttribute("id", id);
         div_label.setAttribute("width", "1000px");
         div_label.setAttribute("height", "200px");
-        div_label.appendChild(label);
         div_label.appendChild(document.createElement("br"));
         div_label.appendChild(document.createElement("br"));
         div.appendChild(div_label);
@@ -92,14 +119,26 @@
     }
 
     function delete_lane(){
-        var id = document.getElementById("delete_test").value;
+        //测试，删除对应id泳道
+        var id = document.getElementById("delete_lane_test").value;
         var board = document.getElementById("board");
-        board.removeChild(document.getElementById(lane_ids[id]));
+        board.removeChild(document.getElementById(id));
         var index = lane_ids.indexOf(id);
         lane_ids.splice(index, 1);
     }
 
-    function 
+    function add_card(){
+        //测试，增加对应panel_id的卡片
+        var parent = document.getElementById("");
+    }
+
+    function update_card(){
+        //测试，修改对应panel_id的卡片
+    }
+
+    function delete_card(){
+        //测试，删除对应panel_id的卡片
+    }
 
     // function closeWs() {
     //     webSocket.close();
