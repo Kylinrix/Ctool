@@ -42,13 +42,9 @@
 </style>
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
-<body>
+<body onload="init()">
 <div id="board" class="msg_board"></div>
 <!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
-<input type="button" value="增加泳道" onclick="add_lane()" />
-<input type="text" id="add_lane_test"/><br>
-<input type="button" value="删除泳道" onclick="delete_lane()"/>
-<input type="text" id="delete_lane_test"/><br>
 <input type="button" value="测试专用" onclick="test()"/>
 
 </body>
@@ -76,23 +72,53 @@
         alert(lane_ids.length);
     }
 
+    function init(){
+        var div = document.getElementById("board");
+        var button = document.createElement("input");
+        var text = document.createElement("input");
+        text.setAttribute("id", "add_lane_test");
+        text.setAttribute("type", "text");
+        text.setAttribute("style", "margin-right:5px");
+        div.appendChild(text);
+        button.setAttribute("id", "add_lane_button");
+        button.setAttribute("type", "button");
+        button.setAttribute("value", "增加泳道");
+        button.setAttribute("onclick","add_lane()");
+        div.appendChild(button);
+    }
+
     //增加泳道，自动添加四个panel（模仿leangoo）
     function add_lane() {
         // if(webSocket != null){
         var div = document.getElementById("board");
-        var label = document.createElement("input");
+        var label = document.createElement("label");
         //测试 获取泳道 id
         var id = document.getElementById("add_lane_test").value;
+        if(id.length == 0)
+            id = "l"+(Math.floor(Math.random()*10)).toString();
         var div_label = document.createElement("div");
+        //获取增加泳道按钮
+        var add_lane_button = document.getElementById("add_lane_button");
+        //创建删除泳道按钮
+        var delete_lane_button = document.createElement("input");
+        delete_lane_button.setAttribute("type", "button");
+        delete_lane_button.setAttribute("id", "delete_lane"+id);
+        delete_lane_button.setAttribute("value", "删除泳道");
+        delete_lane_button.setAttribute("style", "margin-left:5px");
+        delete_lane_button.onclick = function(){delete_lane(id);};
         lane_ids.push(id);
-        label.value = "lane_id:"+id;
+        label.innerText = "lane_id:"+id;
         //测试，显示泳道 id
         div_label.appendChild(label);
+        div_label.appendChild(delete_lane_button);
+        div_label.appendChild(document.createElement("br"));
         div_label.appendChild(document.createElement("br"));
         for(var i = 0 ; i <= 3 ; i++){
             var panel = document.createElement("div");
             //测试，根据lane_id形成panel_id，后面从json中获取
-            panel.setAttribute("id",id+"_"+i.toString());
+            //闭包问题，用临时变量保存
+            let new_id = id+"_"+i.toString();
+            panel.setAttribute("id", new_id);
             //并列显示div
             panel.setAttribute("class", "div-inline");
             panel.setAttribute("style", "margin-right:5px");
@@ -102,34 +128,40 @@
             var button = document.createElement("input");
             button.setAttribute("type", "button");
             button.setAttribute("value", "增加卡片");
-            button.setAttribute("onclick", "add_card()");
             button.setAttribute("style", "margin-right:15px");
+            //增加卡片，参数为panel id
+            button.onclick = function () { add_card(new_id); };
             div_label.appendChild(panel);
             div_label.appendChild(button);
         }
         div_label.setAttribute("id", id);
-        div_label.setAttribute("width", "1000px");
-        div_label.setAttribute("height", "200px");
+        // div_label.setAttribute("width", "1000px");
+        // div_label.setAttribute("height", "200px");
         div_label.appendChild(document.createElement("br"));
         div_label.appendChild(document.createElement("br"));
         div.appendChild(div_label);
+        div.removeChild(add_lane_button);
+        div.removeChild(document.getElementById("add_lane_test"));
+        init();
             // var lane_content = document.getElementsByName("lane_content")[0].value.trim();
             // webSocket.send(setJSONObj(lane_content));
         // }
     }
 
-    function delete_lane(){
+    function delete_lane(id){
         //测试，删除对应id泳道
-        var id = document.getElementById("delete_lane_test").value;
+        //alert(id);
         var board = document.getElementById("board");
         board.removeChild(document.getElementById(id));
         var index = lane_ids.indexOf(id);
         lane_ids.splice(index, 1);
     }
 
-    function add_card(){
+    function add_card(id){
         //测试，增加对应panel_id的卡片
-        var parent = document.getElementById("");
+        var parent = document.getElementById(id);
+        var child = document.createElement("input");
+
     }
 
     function update_card(){

@@ -57,7 +57,7 @@ public class ActionService {
     board_id    b_(int)
     user_id     (int)
     action（动作）      String ["update", "delete", "insert"]
-    entity(指定类型)     ["card","panel","lane","board"...]
+    entity(指定类型)     ["card","panel","lane","board","board_member",""]
     panel_id  String (p_xxxx)
     card_id   String (c_xxxx)
     lane_id   String (l_xxxx)
