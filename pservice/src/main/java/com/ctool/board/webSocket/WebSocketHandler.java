@@ -2,7 +2,7 @@ package com.ctool.board.webSocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ctool.board.service.ActionService;
+import com.ctool.board.service.ActionNettyService;
 import com.ctool.util.JsonUtil;
 import com.ctool.util.KeyWordUtil;
 import io.netty.channel.*;
@@ -33,7 +33,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
     RedisTemplate redisTemplate;
 
     @Autowired
-    ActionService actionService;
+    ActionNettyService actionNettyService;
 
     //一个 ChannelGroup 代表一个直播频道
     private  static Map<Integer, ChannelGroup> channelGroupMap = new ConcurrentHashMap<>();
@@ -110,7 +110,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         //处理数据库逻辑
         String resJson =null;
         try {
-            resJson = actionService.handlerJsonCode(msg.text());
+            resJson = actionNettyService.handlerJsonCode(msg.text());
         }
         catch (Exception e){
             logger.warn("命令执行错误: "+e.toString());

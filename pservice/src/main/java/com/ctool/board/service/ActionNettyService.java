@@ -28,9 +28,9 @@ import static com.ctool.util.String2IntUtil.string2IntId;
  */
 
 @Service
-public class ActionService {
+public class ActionNettyService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ActionNettyService.class);
 
     private final static String DEFAULT_CARD_NAME = "卡片";
     private final static String DEFAULT_LANE_NAME = "泳道";
@@ -100,6 +100,20 @@ public class ActionService {
     /**
      * 卡片
      *
+=======
+    private final static String NONE_ENTITY = "x_-1";
+    /*
+    约定格式如下：
+    board_id    b_(int)
+    user_id     (int)
+    action（动作）      String ["update", "delete", "insert"]
+    entity(指定类型)     ["card","panel","lane","board"...]
+    panel_id  String (p_xxxx)
+    card_id   String (c_xxxx)
+    lane_id   String (l_xxxx)
+    content     (string)
+    description     (String)
+>>>>>>> e9e0e39fc303a79ad941193ded38047eb7312df0
      */
     private String addCard(JSONObject jsonObject){
         //必需字段
