@@ -15,12 +15,15 @@ public class KeyWordUtil {
     public static final int SESSION_TIMEOUT = 1800;//seconds
 
 
+    //redis 索引前缀
     public static final String LOGIN_USER_PREFIX = "LOGINUSER:";
     public static final String LOGIN_USER_TOEKN_PREFIX = "LOGINUSERTOEKN:";
+    public static final String CARD_MEMBER_PREFIX = "CARD_MEMBER:";
 
 
     public static final String LOGIN_PAGE = "http://localhost:8001/signIn";
 
+    public static final int ID_PREFIX_INDEX = 2;
 
     //看板权限，默认是成员可写
     public static final int BORAD_AUTHORIZATION_MEMBER =0;

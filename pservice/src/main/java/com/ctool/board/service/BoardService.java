@@ -152,18 +152,18 @@ public class BoardService {
         if(panelDAO.deleteById(panelId)>0)return true;
         return false;
     }
-    public boolean  updatePanel(@NotNull int cardId,String name,String description){
+    public boolean  updatePanel(@NotNull int panelId,String name,String description){
 
         //HTML过滤
         name = HtmlUtils.htmlEscape(name);
         description = HtmlUtils.htmlEscape(description);
-        if(panelDAO.updateCard(cardId,name,description)>0)return true;
+        if(panelDAO.updatePanel(panelId,name,description)>0)return true;
         else return false;
     }
 
 
     //card
-    public Card addCard(@NotNull int laneId,String name,int userId,String cardContent,String description) {
+    public Card addCard(@NotNull int panelId,String name,int userId,String cardContent,String description) {
 
 
         //HTML过滤
@@ -174,7 +174,7 @@ public class BoardService {
 
         Card card = new Card();
         card.setCardName(name);
-        card.setLaneId(laneId);
+        card.setPanelId(panelId);
         card.setCreatedDate(new Date());
         card.setLastChanger(userId);
         card.setCardContent(cardContent);

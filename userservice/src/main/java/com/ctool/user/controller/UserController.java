@@ -1,5 +1,7 @@
 package com.ctool.user.controller;
 
+import com.alibaba.dubbo.remoting.zookeeper.ZookeeperClient;
+import com.alibaba.dubbo.remoting.zookeeper.curator.CuratorZookeeperClient;
 import com.alibaba.fastjson.JSONObject;
 import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
@@ -8,6 +10,7 @@ import com.ctool.user.model.UserHolder;
 import com.ctool.util.JsonUtil;
 import com.ctool.util.KeyWordUtil;
 import org.apache.ibatis.annotations.Param;
+import org.apache.zookeeper.server.ZooKeeperServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +52,8 @@ public class UserController {
     public String register (Model model,@RequestParam(value = "next", required = false) String next){
 
         model.addAttribute("next",next);
+        //ZookeeperClient zookeeperClient = new CuratorZookeeperClient();
+        //登录
         return "signIn";
     }
 
@@ -132,6 +138,7 @@ public class UserController {
                                                 request.getSession().getId(),
                                                 KeyWordUtil.LOGINUSER_TIMEOUT,
                                                 TimeUnit.SECONDS);
+
                 //页面重定向可以在前端使用
                 //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
 

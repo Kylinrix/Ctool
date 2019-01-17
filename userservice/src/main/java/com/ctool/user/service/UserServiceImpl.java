@@ -15,6 +15,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -81,6 +82,8 @@ public class UserServiceImpl implements UserService {
         regUser.setSalt(UUID.randomUUID().toString().substring(0, 5).toLowerCase());
         regUser.setPassword(MD5Util.MD5(pwd+regUser.getSalt()));
         regUser.setStatus(ORDINARY_USER);
+        //使用随机头像库
+        regUser.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
         userDAO.addUser(regUser);
         context.put("user",regUser);
         return context;

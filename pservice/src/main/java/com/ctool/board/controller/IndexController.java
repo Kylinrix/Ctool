@@ -1,13 +1,9 @@
 package com.ctool.board.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.fastjson.JSONObject;
-import com.ctool.board.service.ActionService;
 import com.ctool.board.service.BoardService;
-import com.ctool.model.BoardUserRelation;
 import com.ctool.model.ViewObject;
 import com.ctool.model.board.Board;
-import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.util.JsonUtil;
 import org.slf4j.Logger;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.soap.Addressing;
 import java.util.*;
 
 /**
@@ -57,12 +52,12 @@ public class IndexController {
      */
     @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.GET})
     public String index(HttpServletResponse response,
-                        HttpServletRequest request, Model model,@PathVariable("boardId") int boardId){
+                        HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
         model.addAttribute("boardId",boardId);
         int userId = (int)request.getSession().getAttribute("userId");
 
 
-        if(boardService.checkIfBoardAuthorized(boardId,userId)!=0){
+        if(boardService.checkIfBoardAuthorized(Integer.parseInt(boardId.substring(2)),userId)!=0){
             model.addAttribute("msg","错误，权限不足。您不能访问该看板。");
             return "error";
         }
@@ -83,7 +78,12 @@ public class IndexController {
     @RequestMapping(path = {"/board"},method = {RequestMethod.GET,RequestMethod.POST})
     public String userBoard(HttpServletResponse response,
                         HttpServletRequest request, Model model){
+
+        //设置关于
+        //request.getServletContext().getSessionCookieConfig().setDomain();
+        //request.getSession()
         List<ViewObject> info = new ArrayList<ViewObject>();
+
         if(request.getSession().getAttribute("userId")!=null) {
             int userId = (int)request.getSession().getAttribute("userId");
             List<Board> blist = boardService.getBoardsByUserid(userId);

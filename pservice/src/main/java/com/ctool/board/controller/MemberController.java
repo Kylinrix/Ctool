@@ -3,6 +3,7 @@ package com.ctool.board.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
 import com.ctool.board.service.BoardService;
+import com.ctool.board.service.CardMemberService;
 import com.ctool.model.BoardUserRelation;
 import com.ctool.model.board.Board;
 import com.ctool.model.user.User;
@@ -37,6 +38,8 @@ public class MemberController {
     @Autowired
     BoardService boardService;
 
+    @Autowired
+    CardMemberService cardMemberService;
 
     @ResponseBody
     @RequestMapping(path={"/addMemberToBoard"},method = {RequestMethod.GET,RequestMethod.POST})
@@ -55,7 +58,7 @@ public class MemberController {
                                     HttpServletRequest request,
                                     @RequestBody String boardId,
                                     @RequestBody String memberId){
-        if(! boardService.removeBoardMember(Integer.parseInt(boardId.substring(2)),Integer.parseInt(memberId)))
+        if(boardService.removeBoardMember(Integer.parseInt(boardId.substring(2)),Integer.parseInt(memberId)))
             return JsonUtil.getJSONString(0);
         else return JsonUtil.getJSONString(1,"fail","看板删除成员失败");
     }
@@ -77,6 +80,35 @@ public class MemberController {
             return JsonUtil.getJSONString(1,"fail","获取看板成员失败");
 
         }
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(path={"/addCardMembers"},method = {RequestMethod.GET,RequestMethod.POST})
+    public String addCardMissionUsers (Model model,
+                                       HttpServletRequest request,
+                                       @RequestBody String cardId,
+                                       @RequestBody int userId){
+        try {
+            cardMemberService.addCardMemberByJSON(Integer.parseInt(cardId.substring(2)), userId);
+            return JsonUtil.getJSONString(0);
+        }catch (Exception e){
+            logger.warn("添加卡片成员失败"+e);
+            return JsonUtil.getJSONString(1, "失败","添加卡片成员失败");
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(path={"/getCardMembers"},method = {RequestMethod.GET,RequestMethod.POST})
+    public String getCardMissionUsers (Model model,
+                              HttpServletRequest request,
+                              @RequestBody String cardId){
+
+        List<User> ulist = cardMemberService.getCardMemberByJSON(Integer.parseInt(cardId.substring(2)));
+        JSONObject jsonObject =new JSONObject();
+        jsonObject.put("cardMembers",ulist);
+        return JsonUtil.getJSONString(0,jsonObject);
     }
 
 

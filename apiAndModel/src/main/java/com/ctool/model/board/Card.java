@@ -1,7 +1,10 @@
 package com.ctool.model.board;
 
+import com.ctool.model.user.User;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Auther: Kylinrix
@@ -14,7 +17,7 @@ public class Card implements Serializable {
     private int id;
     //private long id;
 
-    private int laneId;
+    private int panelId;
 
     private String cardName;
 
@@ -27,6 +30,15 @@ public class Card implements Serializable {
 
     private String description;
 
+//    private List<User> members;
+//
+//    public List<User> getMembers() {
+//        return members;
+//    }
+//
+//    public void setMembers(List<User> members) {
+//        this.members = members;
+//    }
 
     public int getId() {
         return id;
@@ -36,12 +48,12 @@ public class Card implements Serializable {
         this.id = id;
     }
 
-    public int getLaneId() {
-        return laneId;
+    public int getPanelId() {
+        return panelId;
     }
 
-    public void setLaneId(int laneId) {
-        this.laneId = laneId;
+    public void setPanelId(int panelId) {
+        this.panelId = panelId;
     }
 
     public String getCardName() {

@@ -51,7 +51,7 @@ public interface PanelDAO {
             " set panel_name=#{name} " +
             " description=#{description} "+
             " where id=#{panelId} "})
-    int  updateCard( int panelId, String name,String description);
+    int  updatePanel( int panelId, String name,String description);
 
 
 }

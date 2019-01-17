@@ -16,6 +16,7 @@ public class User implements Serializable {
     private String email;
     private String headUrl;
 
+
     /**
      * status 用户状态：未验证 0，已验证 1
      */
