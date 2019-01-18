@@ -112,27 +112,36 @@
         div_label.appendChild(label);
         div_label.appendChild(delete_lane_button);
         div_label.appendChild(document.createElement("br"));
-        div_label.appendChild(document.createElement("br"));
         for(var i = 0 ; i <= 3 ; i++){
             var panel = document.createElement("div");
             //测试，根据lane_id形成panel_id，后面从json中获取
             //闭包问题，用临时变量保存
             let new_id = id+"_"+i.toString();
             panel.setAttribute("id", new_id);
-            //并列显示div
-            panel.setAttribute("class", "div-inline");
-            panel.setAttribute("style", "margin-right:5px");
+            //并列显示div,且起始高度一致
+            panel.style.display = "inline-block";
+            panel.style.marginRight = "10px";
+            panel.style.marginTop = "5px";
+            //panel.style.float = "left";
+            panel.style.overflow = "auto";
+            //panel.setAttribute("class", "div-inline");
             var t = document.createElement("input");
-            t.value = "panel"+i.toString();
-            panel.appendChild(t);
+            //隐藏的标签来保存card数量
+            var nums = document.createElement("text");
+            //nums.setAttribute("id", new_id+"_nums");
+            nums.setAttribute("value", "0");
+            nums.style.display = "none";
             var button = document.createElement("input");
             button.setAttribute("type", "button");
             button.setAttribute("value", "增加卡片");
             button.setAttribute("style", "margin-right:15px");
             //增加卡片，参数为panel id
             button.onclick = function () { add_card(new_id); };
+            panel.appendChild(button);
+            panel.appendChild(document.createElement("br"));
+            panel.appendChild(t);
+            panel.appendChild(nums);
             div_label.appendChild(panel);
-            div_label.appendChild(button);
         }
         div_label.setAttribute("id", id);
         // div_label.setAttribute("width", "1000px");
@@ -153,23 +162,44 @@
         //alert(id);
         var board = document.getElementById("board");
         board.removeChild(document.getElementById(id));
+        board.removeChild(document.getElementsByTagName("br")[0]);
+        board.removeChild(document.getElementsByTagName("br")[0]);
+        //board.removeChild(document.getElementsByTagName("br")[0]);
         var index = lane_ids.indexOf(id);
         lane_ids.splice(index, 1);
     }
 
     function add_card(id){
         //测试，增加对应panel_id的卡片
+        //获取panel
         var parent = document.getElementById(id);
-        var child = document.createElement("input");
-
+        var card = document.createElement("input");
+        parent.appendChild(document.createElement("br"));
+        card.setAttribute("id", id+"_");
+        card.setAttribute("value", "");
+        card.setAttribute("style", "");
+        //json操作
+        //........
+        parent.appendChild(card);
     }
 
-    function update_card(){
-        //测试，修改对应panel_id的卡片
+    //按钮待定
+    function update_card(id, content){
+        //获取card对象
+        var card = document.getElementById(id);
+        card.value = content;
+        //json操作
+        //........
     }
 
-    function delete_card(){
+    function delete_card(id){
         //测试，删除对应panel_id的卡片
+        //获取panel对象
+        var card = document.getElementById(id);
+        var parent = card.parentElement;
+        parent.removeChild(card);
+        //json操作
+        //........
     }
 
     // function closeWs() {
