@@ -42,13 +42,9 @@
 </style>
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
-<body>
+<body onload="init()">
 <div id="board" class="msg_board"></div>
 <!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
-<input type="button" value="增加泳道" onclick="add_lane()" />
-<input type="text" id="add_lane_test"/><br>
-<input type="button" value="删除泳道" onclick="delete_lane()"/>
-<input type="text" id="delete_lane_test"/><br>
 <input type="button" value="测试专用" onclick="test()"/>
 
 </body>
@@ -76,132 +72,198 @@
         alert(lane_ids.length);
     }
 
+    function init(){
+        var div = document.getElementById("board");
+        var button = document.createElement("input");
+        var text = document.createElement("input");
+        text.setAttribute("id", "add_lane_test");
+        text.setAttribute("type", "text");
+        text.setAttribute("style", "margin-right:5px");
+        div.appendChild(text);
+        button.setAttribute("id", "add_lane_button");
+        button.setAttribute("type", "button");
+        button.setAttribute("value", "增加泳道");
+        button.setAttribute("onclick","add_lane()");
+        div.appendChild(button);
+    }
+
     //增加泳道，自动添加四个panel（模仿leangoo）
     function add_lane() {
         // if(webSocket != null){
         var div = document.getElementById("board");
-        var label = document.createElement("input");
+        var label = document.createElement("label");
         //测试 获取泳道 id
         var id = document.getElementById("add_lane_test").value;
+        if(id.length == 0)
+            id = "l"+(Math.floor(Math.random()*10)).toString();
         var div_label = document.createElement("div");
+        //获取增加泳道按钮
+        var add_lane_button = document.getElementById("add_lane_button");
+        //创建删除泳道按钮
+        var delete_lane_button = document.createElement("input");
+        delete_lane_button.setAttribute("type", "button");
+        delete_lane_button.setAttribute("id", "delete_lane"+id);
+        delete_lane_button.setAttribute("value", "删除泳道");
+        delete_lane_button.setAttribute("style", "margin-left:5px");
+        delete_lane_button.onclick = function(){delete_lane(id);};
         lane_ids.push(id);
-        label.value = "lane_id:"+id;
+        label.innerText = "lane_id:"+id;
         //测试，显示泳道 id
         div_label.appendChild(label);
+        div_label.appendChild(delete_lane_button);
         div_label.appendChild(document.createElement("br"));
         for(var i = 0 ; i <= 3 ; i++){
             var panel = document.createElement("div");
             //测试，根据lane_id形成panel_id，后面从json中获取
-            panel.setAttribute("id",id+"_"+i.toString());
-            //并列显示div
-            panel.setAttribute("class", "div-inline");
-            panel.setAttribute("style", "margin-right:5px");
+            //闭包问题，用临时变量保存
+            let new_id = id+"_"+i.toString();
+            panel.setAttribute("id", new_id);
+            //并列显示div,且起始高度一致
+            panel.style.display = "inline-block";
+            panel.style.marginRight = "10px";
+            panel.style.marginTop = "5px";
+            //panel.style.float = "left";
+            panel.style.overflow = "auto";
+            //panel.setAttribute("class", "div-inline");
             var t = document.createElement("input");
-            t.value = "panel"+i.toString();
-            panel.appendChild(t);
+            //隐藏的标签来保存card数量
+            var nums = document.createElement("text");
+            //nums.setAttribute("id", new_id+"_nums");
+            nums.setAttribute("value", "0");
+            nums.style.display = "none";
             var button = document.createElement("input");
             button.setAttribute("type", "button");
             button.setAttribute("value", "增加卡片");
-            button.setAttribute("onclick", "add_card()");
             button.setAttribute("style", "margin-right:15px");
+            //增加卡片，参数为panel id
+            button.onclick = function () { add_card(new_id); };
+            panel.appendChild(button);
+            panel.appendChild(document.createElement("br"));
+            panel.appendChild(t);
+            panel.appendChild(nums);
             div_label.appendChild(panel);
-            div_label.appendChild(button);
         }
         div_label.setAttribute("id", id);
-        div_label.setAttribute("width", "1000px");
-        div_label.setAttribute("height", "200px");
+        // div_label.setAttribute("width", "1000px");
+        // div_label.setAttribute("height", "200px");
         div_label.appendChild(document.createElement("br"));
         div_label.appendChild(document.createElement("br"));
         div.appendChild(div_label);
-            // var lane_content = document.getElementsByName("lane_content")[0].value.trim();
-            // webSocket.send(setJSONObj(lane_content));
+        div.removeChild(add_lane_button);
+        div.removeChild(document.getElementById("add_lane_test"));
+        init();
+        // var lane_content = document.getElementsByName("lane_content")[0].value.trim();
+        // webSocket.send(setJSONObj(lane_content));
         // }
     }
 
-    function delete_lane(){
+    function delete_lane(id){
         //测试，删除对应id泳道
-        var id = document.getElementById("delete_lane_test").value;
+        //alert(id);
         var board = document.getElementById("board");
         board.removeChild(document.getElementById(id));
+        board.removeChild(document.getElementsByTagName("br")[0]);
+        board.removeChild(document.getElementsByTagName("br")[0]);
+        //board.removeChild(document.getElementsByTagName("br")[0]);
         var index = lane_ids.indexOf(id);
         lane_ids.splice(index, 1);
     }
 
-    function add_card(){
+    function add_card(id){
         //测试，增加对应panel_id的卡片
-        var parent = document.getElementById("");
+        //获取panel
+        var parent = document.getElementById(id);
+        var card = document.createElement("input");
+        parent.appendChild(document.createElement("br"));
+        card.setAttribute("id", id+"_");
+        card.setAttribute("value", "");
+        card.setAttribute("style", "");
+        //json操作
+        //........
+        parent.appendChild(card);
     }
 
-    function update_card(){
-        //测试，修改对应panel_id的卡片
+    //按钮待定
+    function update_card(id, content){
+        //获取card对象
+        var card = document.getElementById(id);
+        card.value = content;
+        //json操作
+        //........
     }
 
-    function delete_card(){
+    function delete_card(id){
         //测试，删除对应panel_id的卡片
+        //获取panel对象
+        var card = document.getElementById(id);
+        var parent = card.parentElement;
+        parent.removeChild(card);
+        //json操作
+        //........
     }
 
     // function closeWs() {
     //     webSocket.close();
     // };
 
-//     function initWebSocket() {
-//         var boardName;
-//         if(r_name != ""){
-//             boardName = r_name;
-//         }
-//         else{
-//             boardName = "init";
-//         }
-//         if (boardName == null || boardName.length == 0) {
-//             alert("请输入房间名");
-//             return;
-//         }
-//         if ("WebSocket" in window) {
-// //            alert("您的浏览器支持 WebSocket!");
-//             //alert(boardName)
-//             if (webSocket == null) {
-//                 //var url = "ws://localhost:12345/wstest/" + boardName;
-//                 var url = "ws://localhost:12345/wstest/";
-//                 // 打开一个 web socket
-//                 webSocket = new WebSocket(url);
-//             } else {
-//                 alert("您已进入看板...");
-//             }
-//
-//             webSocket.onopen = function () {
-//                 alert("已进入看板...");
-//             };
-//
-//             webSocket.onmessage = function (evt) {
-//                 var msg_board = document.getElementsByClassName("msg_board")[0];
-//                 var received_msg = evt.data;
-//                 var rec = eval("("+received_msg+")");
-//                 board_id = rec["board_id"];
-//                 user_id = rec["user_id"];
-//                 action = rec["action"];
-//                 entity = rec["entity"];
-//                 card_id = rec["card_id"];
-//                 panel_id = rec["panel_id"];
-//                 lane_id = rec["lane_id"];
-//                 content = rec["content"];
-//                 description = rec["description"];
-//                 var old_msg = msg_board.innerHTML;
-//                 msg_board.innerHTML = old_msg + received_msg + "<br>";
-//                 // 让滚动块往下移动
-//                 msg_board.scrollTop = msg_board.scrollTop + 40;
-//             };
-//
-//             webSocket.onclose = function () {
-//                 // 关闭 websocket，清空信息板
-//                 alert("连接已关闭...");
-//                 webSocket = null;
-//                 document.getElementsByClassName("msg_board")[0].innerHTML = "";
-//             };
-//         }
-//         else {
-//             // 浏览器不支持 WebSocket
-//             alert("您的浏览器不支持 WebSocket!");
-//         }
-//     }
+    //     function initWebSocket() {
+    //         var boardName;
+    //         if(r_name != ""){
+    //             boardName = r_name;
+    //         }
+    //         else{
+    //             boardName = "init";
+    //         }
+    //         if (boardName == null || boardName.length == 0) {
+    //             alert("请输入房间名");
+    //             return;
+    //         }
+    //         if ("WebSocket" in window) {
+    // //            alert("您的浏览器支持 WebSocket!");
+    //             //alert(boardName)
+    //             if (webSocket == null) {
+    //                 //var url = "ws://localhost:12345/wstest/" + boardName;
+    //                 var url = "ws://localhost:12345/wstest/";
+    //                 // 打开一个 web socket
+    //                 webSocket = new WebSocket(url);
+    //             } else {
+    //                 alert("您已进入看板...");
+    //             }
+    //
+    //             webSocket.onopen = function () {
+    //                 alert("已进入看板...");
+    //             };
+    //
+    //             webSocket.onmessage = function (evt) {
+    //                 var msg_board = document.getElementsByClassName("msg_board")[0];
+    //                 var received_msg = evt.data;
+    //                 var rec = eval("("+received_msg+")");
+    //                 board_id = rec["board_id"];
+    //                 user_id = rec["user_id"];
+    //                 action = rec["action"];
+    //                 entity = rec["entity"];
+    //                 card_id = rec["card_id"];
+    //                 panel_id = rec["panel_id"];
+    //                 lane_id = rec["lane_id"];
+    //                 content = rec["content"];
+    //                 description = rec["description"];
+    //                 var old_msg = msg_board.innerHTML;
+    //                 msg_board.innerHTML = old_msg + received_msg + "<br>";
+    //                 // 让滚动块往下移动
+    //                 msg_board.scrollTop = msg_board.scrollTop + 40;
+    //             };
+    //
+    //             webSocket.onclose = function () {
+    //                 // 关闭 websocket，清空信息板
+    //                 alert("连接已关闭...");
+    //                 webSocket = null;
+    //                 document.getElementsByClassName("msg_board")[0].innerHTML = "";
+    //             };
+    //         }
+    //         else {
+    //             // 浏览器不支持 WebSocket
+    //             alert("您的浏览器不支持 WebSocket!");
+    //         }
+    //     }
 </script>
 </html>
