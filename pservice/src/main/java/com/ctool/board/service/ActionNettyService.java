@@ -52,7 +52,6 @@ public class ActionNettyService {
     @Autowired
     CardMemberService cardMemberService;
 
-
     @Reference
     UserService userService;
 
@@ -60,9 +59,18 @@ public class ActionNettyService {
     * 以下所有方法都标明了需要的字段。
     * 使用action字段指明调用的方法。
     * 有些方法的返回JSON中带有目标Bean。
+    * 前端所有ID都以单词小写首字母加下划线做前缀。即
+    * Card -> c_xxxx
+    * Panel -> p_xxxx
+    * Lane -> l_xxxx
+    * Board ->b_xxxx
+    * User -> u_xxxx
+    * CardMember -> cm_xxxx
+    * BoardMember ->bm_xxxx
     *
+    * 后端所有的ID都为int。传回前端的ID也是int形式的，前端需要自己提取后，加入前缀。
     */
-   public String handlerJsonCode(String code) throws SQLException {
+   public String handlerJsonCode(String code)  {
 
        //解析JSON
        JSONObject jsonObject = JSON.parseObject(code);
@@ -100,20 +108,6 @@ public class ActionNettyService {
     /**
      * 卡片
      *
-=======
-    private final static String NONE_ENTITY = "x_-1";
-    /*
-    约定格式如下：
-    board_id    b_(int)
-    user_id     (int)
-    action（动作）      String ["update", "delete", "insert"]
-    entity(指定类型)     ["card","panel","lane","board"...]
-    panel_id  String (p_xxxx)
-    card_id   String (c_xxxx)
-    lane_id   String (l_xxxx)
-    content     (string)
-    description     (String)
->>>>>>> e9e0e39fc303a79ad941193ded38047eb7312df0
      */
     private String addCard(JSONObject jsonObject){
         //必需字段
@@ -143,7 +137,7 @@ public class ActionNettyService {
         Card card = boardService.addCard(
                 string2IntId(panelId),
                 DEFAULT_CARD_NAME,
-                Integer.parseInt(userId),
+                string2IntId(userId),
                 content,
                 description);
 
@@ -181,7 +175,7 @@ public class ActionNettyService {
             logger.warn("updateCard 缺少card_id");
             return JsonUtil.getJSONString(1, "更新卡片失败", "没有指定卡片！");
         }
-        Card card = boardService.getCard(Integer.parseInt(cardId));
+        Card card = boardService.getCard(string2IntId(cardId));
         if(content==null)content =card.getCardContent();
         if(description == null) description=card.getDescription();
 
@@ -254,7 +248,7 @@ public class ActionNettyService {
         List<User> members ;
         //操作
         try {
-            members =cardMemberService.addCardMemberByJSON(string2IntId(cardId), Integer.parseInt(memberId));
+            members =cardMemberService.addCardMemberByJSON(string2IntId(cardId), string2IntId(memberId));
         }catch (Exception e){
             logger.warn("添加卡片成员失败"+e);
             return JsonUtil.getJSONString(1, "添加卡片成员失败","添加卡片成员操作失败");
@@ -512,7 +506,7 @@ public class ActionNettyService {
         }
 
         //操作
-        if(!boardService.removeBoardMember(Integer.parseInt(boardId.substring(2)),Integer.parseInt(memberId)))
+        if(!boardService.removeBoardMember(string2IntId(boardId),string2IntId(memberId)))
             return JsonUtil.getJSONString(1,"移除看板成员失败","操作失败");
 
         //返回

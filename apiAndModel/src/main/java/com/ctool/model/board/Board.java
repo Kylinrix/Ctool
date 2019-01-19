@@ -2,6 +2,7 @@ package com.ctool.model.board;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Auther: Kylinrix
@@ -27,6 +28,16 @@ public class Board implements Serializable {
     private int authorization;
 
     private String description;
+
+//    private List<Lane> lanes;
+//
+//    public List<Lane> getLanes() {
+//        return lanes;
+//    }
+//
+//    public void setLanes(List<Lane> lanes) {
+//        this.lanes = lanes;
+//    }
 
     public int getId() {
         return id;

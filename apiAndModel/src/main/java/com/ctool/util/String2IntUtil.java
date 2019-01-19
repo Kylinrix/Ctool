@@ -12,6 +12,6 @@ public class String2IntUtil {
     private static final int ID_PREFIX_INDEX =2;
 
     public static int string2IntId(String id){
-        return Integer.parseInt(id.substring(ID_PREFIX_INDEX));
+        return Integer.parseInt(id.substring(id.lastIndexOf("_")+1));
     }
 }

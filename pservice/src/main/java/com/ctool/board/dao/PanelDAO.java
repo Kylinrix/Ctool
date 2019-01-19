@@ -41,8 +41,8 @@ public interface PanelDAO {
     @Select({"select ", selectFields, " from ", tableName, " where id=#{id}"})
     Panel selectById(int id);
 
-    @Select({"select * form "+tableName+" where lane_id = #{laneId} order by created_date ASC "})
-    List<Lane> selectByLaneId(int laneId);
+    @Select({"select * from "+tableName+" where lane_id = #{laneId} order by created_date ASC "})
+    List<Panel> selectByLaneId(int laneId);
 
     @Delete({"delete from "+tableName + " where id =#{id}"})
     int deleteById(int id);

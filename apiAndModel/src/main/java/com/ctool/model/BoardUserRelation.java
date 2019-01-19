@@ -13,10 +13,11 @@ public class BoardUserRelation implements Serializable {
     private int id;
     private int boardId;
     private int userId;
+
     /**
-     * int 0 member
-     * int 1 owner
-     * int 2 blackList
+     * int 0 member默认成员
+     * int 1 owner 拥有者
+     * int 2 blackList 黑名单
      */
     private int userRole;
     private Date createdDate;

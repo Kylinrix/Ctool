@@ -304,5 +304,24 @@ public class BoardService {
         else return true;
     }
 
+    public boolean checkBoardExist(int boardId){
+
+        Board board = boardDAO.selectById(boardId);
+        if(board == null) return false;
+        else return true;
+    }
+
+
+    public List<Lane> getLanesByBoardId (int boardId){
+        return laneDAO.selectByBoardId(boardId);
+    }
+
+    public List<Panel> getPanelByLaneId (int laneId){
+        return panelDAO.selectByLaneId(laneId);
+    }
+    public List<Card> getCardByPanelId(int panelId){
+        return cardDAO.selectByPanelId(panelId);
+    }
+
 
 }

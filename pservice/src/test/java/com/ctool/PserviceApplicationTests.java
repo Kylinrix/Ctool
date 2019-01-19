@@ -6,12 +6,17 @@ import com.ctool.board.dao.BoardDAO;
 import com.ctool.board.dao.BoardUserRelationDAO;
 import com.ctool.board.dao.CardDAO;
 import com.ctool.board.dao.LaneDAO;
+import com.ctool.board.service.ActionNettyService;
+import com.ctool.board.service.BoardService;
+import com.ctool.board.service.CardMemberService;
 import com.ctool.model.BoardUserRelation;
 import com.ctool.model.board.Board;
 import com.ctool.model.board.Card;
 import com.ctool.model.board.Lane;
+import com.ctool.model.board.Panel;
 import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
+import com.ctool.util.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +29,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.ctool.util.String2IntUtil.string2IntId;
+
 //这是直接mysql-dump。测试使用，注意会删除表之后再新建表。
-@Sql("/Board-init.sql")
+//@Sql("Board-init.sql")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PserviceApplicationTests {
 
     @Reference
     UserService userService;
+
+    @Autowired
+    BoardService boardService;
 
     @Autowired(required = false)
     BoardUserRelationDAO boardUserRelationDAO;
@@ -44,6 +54,13 @@ public class PserviceApplicationTests {
 
     @Autowired(required = false)
     CardDAO cardDAO;
+
+    @Autowired
+    CardMemberService cardMemberService;
+
+
+    @Autowired
+    ActionNettyService actionNettyService;
 
     @Test
     public void BoardSqlTest() {
@@ -106,12 +123,11 @@ public class PserviceApplicationTests {
 //        userService.checkAndUpdateIfUserExpired(1,"1234-1234");
     }
 
-    @Rollback(false)
+    //@Rollback(false)
     @Test
     public void relationDAOTest(){
 
 
-        //System.out.println(boardDAO.selectByName("b1234"));
 
         System.out.println("------------relaitionDAO Test----------");
 
@@ -126,7 +142,7 @@ public class PserviceApplicationTests {
         Board b = new Board();
         b.setBoardName("b1234");
         b.setCreatedDate(new Date());
-        b.setOwnUserId(5);
+        b.setOwnUserId(4);
         b.setDescription("testb2");
         b.setAuthorization(0);
         boardDAO.insertBoard(b);
@@ -152,22 +168,117 @@ public class PserviceApplicationTests {
     @Test
     public void jsonHandlerTest(){
 
+
+        boardService.addBoard("test-json",1,"sd");
+
+        boardService.addBoardMember(1,1);
+
+        boardService.addLane(1,"qwe","asdffa");
+
+        boardService.addPanel(1,"fda","adfdsaf");
+
+        boardService.addPanel(1,"fda","adfdsaf");
+
+        boardService.addCard(1,"123",1,"d","dfas");
+        boardService.addCard(1,"123",1,"d","dfas");
+        boardService.addCard(1,"123",1,"d","dfas");
+
+
+
         System.out.println("------------JSON Test----------");
-        JSONObject j =new JSONObject();
-        j.put("code",1);
-        j.put("msg","this is a msg");
-        User user = new User();
-        user.setId(1);
-        user.setName("sdfds");
-        user.setEmail("12324234234@123123.com");
-        List<User> list = new ArrayList<>();
-        list.add(user);
-        list.add(user);
-        j.put("users",list);
-        System.out.println(j.toJSONString());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action","add_card");
+        jsonObject.put("user_id","u_1");
+        jsonObject.put("panel_id","p_1");
+        jsonObject.put("content","this is a test");
+
+        System.out.println(actionNettyService.handlerJsonCode(jsonObject.toJSONString()));
 
     }
 
+    @Test
+    public void getAllMsgTest(){
+
+
+        System.out.println("------------getAllMsg Test----------");
+        boardService.addBoard("test-json",1,"sd");
+
+        boardService.addBoardMember(1,1);
+
+        boardService.addLane(1,"qwe","asdffa");
+
+        boardService.addLane(1,"空","asdffa");
+
+        boardService.addPanel(1,"1p","adfdsaf");
+
+        boardService.addPanel(1,"2p","adfdsaf");
+
+        Card c =boardService.addCard(1,"1p-1c",1,"d","dfas");
+         boardService.addCard(1,"1p-2c",1,"d","dfas");
+        boardService.addCard(1,"1p-3c",1,"d","dfas");
+
+
+        boardService.addCard(2,"2p-1c",1,"d","dfas");
+        boardService.addCard(2,"2p-2c",1,"d","dfas");
+        boardService.addCard(2,"2p-3c",1,"d","dfas");
+
+        cardMemberService.addCardMemberByJSON(c.getId(),1);
+        cardMemberService.addCardMemberByJSON(c.getId(),2);
+
+        int boardId = 1;
+        List<Lane> subLanes = boardService.getLanesByBoardId(boardId);
+
+        JSONObject res = new JSONObject();
+
+        JSONObject jsonObject = new JSONObject();
+
+        List<JSONObject> lanes = new ArrayList<>();
+
+        for(Lane lane :subLanes){
+
+            jsonObject.put("lane",lane);
+
+            List <Panel> subPanels =boardService.getPanelByLaneId(lane.getId());
+            List<JSONObject> panels = new ArrayList<>();
+
+            JSONObject jsonObject2 = new JSONObject();
+
+            for (Panel panel :subPanels){
+
+                jsonObject2.put("panel",panel);
+
+                List<JSONObject> cards = new ArrayList<>();
+                List<Card> subCards = boardService.getCardByPanelId(panel.getId());
+
+                JSONObject jsonObject3 = new JSONObject();
+
+                for(Card card :subCards){
+
+                    jsonObject3.put("card",card);
+
+                    List<JSONObject> members = new ArrayList<>();
+                    List<User> subMembers =cardMemberService.getCardMemberByJSON(card.getId());
+
+                    JSONObject jsonObject4 = new JSONObject();
+
+                    for (User user :subMembers){
+                        System.out.println("user :"+user.getId());
+                        jsonObject4.put("member",user);
+                        members.add((JSONObject) jsonObject4.clone());
+                    }
+                    jsonObject3.put("members",members);
+                    cards.add((JSONObject) jsonObject3.clone());
+                }
+                jsonObject2.put("cards",cards);
+                panels.add((JSONObject) jsonObject2.clone());
+            }
+            jsonObject.put("panels",panels);
+            lanes.add((JSONObject) jsonObject.clone());
+        }
+        res.put("lanes",lanes);
+
+        System.out.println(res);
+    }
 
 
 }

@@ -1,9 +1,15 @@
 package com.ctool.board.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSONObject;
 import com.ctool.board.service.BoardService;
+import com.ctool.board.service.CardMemberService;
 import com.ctool.model.ViewObject;
 import com.ctool.model.board.Board;
+import com.ctool.model.board.Card;
+import com.ctool.model.board.Lane;
+import com.ctool.model.board.Panel;
+import com.ctool.model.user.User;
 import com.ctool.remoteService.UserService;
 import com.ctool.util.JsonUtil;
 import org.slf4j.Logger;
@@ -18,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static com.ctool.util.String2IntUtil.string2IntId;
+
 /**
  * @program: Ctool
  * @description: 这里的方法都缺少试验。
@@ -25,10 +33,10 @@ import java.util.*;
  * @create: 2019-01-03 15:56
  **/
 @Controller
-public class IndexController {
+public class BoardController {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
 
     @Reference
@@ -40,6 +48,9 @@ public class IndexController {
     @Autowired
     RedisTemplate redisTemplate;
 
+    @Autowired
+    CardMemberService cardMemberService;
+
 
     /**
      * @Author: Kylinrix
@@ -47,25 +58,87 @@ public class IndexController {
      * @return: java.lang.String
      * @Date: 2019/1/15
      * @Email: Kylinrix@outlook.com
-     * @Description: 返回的页面需要有Board的所有数据 ，包括lanes、panels、cards、members，
-     *                  这里使用模板还是JSON？
+     * @Description: 返回页面
      */
     @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.GET})
     public String index(HttpServletResponse response,
                         HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
-        model.addAttribute("boardId",boardId);
         int userId = (int)request.getSession().getAttribute("userId");
 
-
-        if(boardService.checkIfBoardAuthorized(Integer.parseInt(boardId.substring(2)),userId)!=0){
+        if(!boardService.checkBoardExist(string2IntId(boardId))){
+            model.addAttribute("msg","错误，看板不存在。");
+            return "error";
+        }
+        if(boardService.checkIfBoardAuthorized(string2IntId(boardId),userId)!=0){
             model.addAttribute("msg","错误，权限不足。您不能访问该看板。");
             return "error";
         }
         else{
-            model.addAttribute("userId",userId);
-            return "index";
+            return "board";
         }
     }
+
+    //这里可以加入缓存
+    @ResponseBody
+    @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.POST})
+    public String getAllMsg(HttpServletResponse response,
+                        HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
+
+        List<Lane> subLanes = boardService.getLanesByBoardId(string2IntId(boardId));
+
+        JSONObject res = new JSONObject();
+
+        JSONObject jsonObject = new JSONObject();
+
+        List<JSONObject> lanes = new ArrayList<>();
+
+        for(Lane lane :subLanes){
+
+            jsonObject.put("lane",lane);
+
+            List <Panel> subPanels =boardService.getPanelByLaneId(lane.getId());
+            List<JSONObject> panels = new ArrayList<>();
+
+            JSONObject jsonObject2 = new JSONObject();
+
+            for (Panel panel :subPanels){
+
+                jsonObject2.put("panel",panel);
+
+                List<JSONObject> cards = new ArrayList<>();
+                List<Card> subCards = boardService.getCardByPanelId(panel.getId());
+
+                JSONObject jsonObject3 = new JSONObject();
+
+                for(Card card :subCards){
+
+                    jsonObject3.put("card",card);
+
+                    List<JSONObject> members = new ArrayList<>();
+                    List<User> subMembers =cardMemberService.getCardMemberByJSON(card.getId());
+
+                    JSONObject jsonObject4 = new JSONObject();
+
+                    for (User user :subMembers){
+                        System.out.println("user :"+user.getId());
+                        jsonObject4.put("member",user);
+                        members.add((JSONObject) jsonObject4.clone());
+                    }
+                    jsonObject3.put("members",members);
+                    cards.add((JSONObject) jsonObject3.clone());
+                }
+                jsonObject2.put("cards",cards);
+                panels.add((JSONObject) jsonObject2.clone());
+            }
+            jsonObject.put("panels",panels);
+            lanes.add((JSONObject) jsonObject.clone());
+        }
+        res.put("lanes",lanes);
+
+        return res.toJSONString();
+    }
+
+
 
     /**
      * @Author: Kylinrix
@@ -73,32 +146,34 @@ public class IndexController {
      * @return: java.lang.String
      * @Date: 2019/1/6
      * @Email: Kylinrix@outlook.com
-     * @Description:加载用户所关联的看板
+     * @Description:加载用户所关联的看板,待测试！
      */
-    @RequestMapping(path = {"/board"},method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    @RequestMapping(path = {"/board"},method = {RequestMethod.GET})
     public String userBoard(HttpServletResponse response,
                         HttpServletRequest request, Model model){
 
-        //设置关于
+        //设置
         //request.getServletContext().getSessionCookieConfig().setDomain();
         //request.getSession()
         List<ViewObject> info = new ArrayList<ViewObject>();
 
         if(request.getSession().getAttribute("userId")!=null) {
             int userId = (int)request.getSession().getAttribute("userId");
+            //List<JSONObject> subList = new ArrayList<>();
             List<Board> blist = boardService.getBoardsByUserid(userId);
-            for (Board  b:blist) {
-                ViewObject vo = new ViewObject();
-                vo.set("boardId","b_"+String.valueOf(b.getId()));
-                vo.set("boardName",b.getBoardName());
-                vo.set("createDate",b.getCreatedDate());
-                vo.set("description",b.getDescription());
-                info.add(vo);
-            }
-            model.addAttribute("boards",info);
-            return "boards";
+//            for (Board  b:blist) {
+//                JSONObject jsonObject= new JSONObject();
+//                jsonObject.put("board",b);
+//                subList.add(jsonObject);
+//            }
+            JSONObject res = new JSONObject();
+            res.put("boards",blist);
+            return JsonUtil.getJSONString(0,res);
         }
-        return "error";
+        else
+            return JsonUtil.getJSONString(1,"失败","获得看板列表失败");
+
     }
 
     /**
@@ -114,7 +189,7 @@ public class IndexController {
      * @Description:
      */
     @ResponseBody
-    @RequestMapping(path={"/changeAuthorization"},method = {RequestMethod.GET,RequestMethod.POST})
+    @RequestMapping(path={"/changeAuthorization"},method = {RequestMethod.POST})
     public String changeAuthorization (Model model,
                          HttpServletResponse response,
                          HttpServletRequest request,@RequestParam("authorization") int code,
@@ -122,7 +197,7 @@ public class IndexController {
 
 
         int userId = (int)request.getSession().getAttribute("userId");
-        Board board =boardService.getBoard(Integer.parseInt(boardId.substring(2)));
+        Board board =boardService.getBoard(string2IntId(boardId));
         if(board.getOwnUserId() == userId){
             boardService.updateBoardAuthorization(board.getId(),code);
             return JsonUtil.getJSONString(0);

@@ -53,12 +53,14 @@ public class CardMemberService {
 
     //Redis JSON 方式
     public List<User> getCardMemberByJSON(int cardId){
-        //暂时不清楚返回的是int还是String.
+
         List<String> userList= redisTemplate.opsForList().range(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),0,-1);
         List<User> res = new ArrayList<>();
         for(int i= 0;i<userList.size();i++){
-            //User user = (User)(JSONObject.parse(userList.get(i)));
-            User user = JSON.parseObject(userList.get(0),User.class);
+            //System.out.println("jsonObject: "+userList.get(i));
+            User user = (JSONObject.parseObject(userList.get(i),User.class));
+
+            //User user = JSON.parseObject(userList.get(0),User.class);
             res.add(user);
         }
         return res;
@@ -68,6 +70,7 @@ public class CardMemberService {
         User user = userService.getUserById(userId);
         String userJson = JSONObject.toJSONString(user);
 
+        //这里需要一次检查是否已存在！
         redisTemplate.opsForList().leftPush(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson);
         return getCardMemberByJSON(cardId);
     }

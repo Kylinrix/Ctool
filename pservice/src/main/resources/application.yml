@@ -1,48 +1,48 @@
-server:
-  port: 8082
-
-#Mysql配置
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/ctool?useUnicode=true&characterEncoding=utf8&useSSL=false
-    username: root
-    password: jrq.l.iggy09
-  #Redis
-  redis:
-    host: localhost
-    port: 6379
-    timeout: 1000ms
-  #Session共享处理
-  session:
-    store-type: redis
-    redis:
-      namespace: spring:session
-  #spring : session : timeout : 600s
-
-#Mybatis
-#mybatis : config-location : classpath:mybatis-config : xml
-mybatis:
-  configuration:
-    cache-enabled: true
-    default-statement-timeout: 3000
-    map-underscore-to-camel-case: true
-    use-generated-keys: true
-
-
-
-#dubbo服务
-dubbo:
-  application:
-    name: userservice
-  registry:
-    address: zookeeper://127.0.0.1:2181
-    client: zkclient
-  scan:
-    base-packages: com.ctool.user.service
-  protocol:
-    name: dubbo
-    port: 20880
-  monitor:
-    protocol: registry
-
-#debug : true
+#server:
+#  port: 8082
+#
+##Mysql配置
+#spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/ctool?useUnicode=true&characterEncoding=utf8&useSSL=false
+#    username: root
+#    password: jrq.l.iggy09
+#  #Redis
+#  redis:
+#    host: localhost
+#    port: 6379
+#    timeout: 1000ms
+#  #Session共享处理
+#  session:
+#    store-type: redis
+#    redis:
+#      namespace: spring:session
+#  #spring : session : timeout : 600s
+#
+##Mybatis
+##mybatis : config-location : classpath:mybatis-config : xml
+#mybatis:
+#  configuration:
+#    cache-enabled: true
+#    default-statement-timeout: 3000
+#    map-underscore-to-camel-case: true
+#    use-generated-keys: true
+#
+#
+#
+##dubbo服务
+#dubbo:
+#  application:
+#    name: userservice
+#  registry:
+#    address: zookeeper://127.0.0.1:2181
+#    client: zkclient
+#  scan:
+#    base-packages: com.ctool.user.service
+#  protocol:
+#    name: dubbo
+#    port: 20880
+#  monitor:
+#    protocol: registry
+#
+##debug : true

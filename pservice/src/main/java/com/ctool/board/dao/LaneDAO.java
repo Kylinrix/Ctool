@@ -40,7 +40,7 @@ public interface LaneDAO {
     @Select({"select ", selectFields, " from ", tableName, " where id=#{id}"})
     Lane selectById(int id);
 
-    @Select({"select * form "+tableName+" where board_id = #{boardId} order by created_date ASC "})
+    @Select({"select * from "+tableName+" where board_id = #{boardId} order by created_date ASC "})
     List<Lane> selectByBoardId(int boardId);
 
     @Delete({"delete from "+tableName + " where id =#{id}"})

@@ -1,6 +1,7 @@
 package com.ctool.model.board;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Kylinrix
@@ -14,6 +15,16 @@ public class Panel {
     private String PanelName;
     private Date createdDate;
     private String description;
+
+//    private List<Card> card;
+//
+//    public List<Card> getCard() {
+//        return card;
+//    }
+//
+//    public void setCard(List<Card> card) {
+//        this.card = card;
+//    }
 
     public int getId() {
         return id;
