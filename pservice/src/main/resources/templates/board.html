@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>看板</title>
-    <!-静态web，后期在onmessage方法里添加对应方法，再在各方法里接受json字符串即可-->
+    <script type="text/javascript" src="../static/jquery-3.3.1.js"></script>
 </head>
 <style type="text/css">
     .msg_board {
@@ -12,32 +12,31 @@
         border: solid 1px darkcyan;
         padding: 5px;
         overflow-y: scroll;
-    // 文字长度大于div宽度时换行显示
-    word-break: break-all;
+    / / 文字长度大于div宽度时换行显示 word-break: break-all;
     }
+
     /*set srcoll start*/
-    ::-webkit-scrollbar
-    {
+    ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
         background-color: #D6F2FD;
     }
-    ::-webkit-scrollbar-track
-    {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+
+    ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         /*border-radius: 5px;*/
         background-color: #D6F2FD;
     }
-    ::-webkit-scrollbar-thumb
-    {
+
+    ::-webkit-scrollbar-thumb {
         height: 20px;
         /*border-radius: 10px;*/
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
         background-color: #89D7F7;
     }
 
-    .div-inline{
-        display:inline
+    .div-inline {
+        display: inline
     }
 </style>
 <!--页面加载时即启动websocket服务器-->
@@ -48,8 +47,8 @@
 <input type="button" value="测试专用" onclick="test()"/>
 
 </body>
-<script type="text/javascript" th:inline="javascript">
-    // var webSocket;
+<script type="text/javascript">
+    var webSocket;
     // var board_id, user_id, action, entity, card_id, panel_id, lane_id, content, description;
     //var r_name = [[${boardName}]];
     var lane_ids = [];
@@ -69,66 +68,47 @@
     //     return JSON.stringify(data);
     // }
 
-    function test(){
+    function test() {
         alert(lane_ids.length);
     }
 
-    function init_web(){
+    function init_web(str) {
         //测试json字符串
-        var str = "{\"lanes\":[{\"panels\":[{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":1,\"laneId\":1,\"panelName\":\"1p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"1p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":1,\"lastChanger\":1,\"panelId\":1},\"members\":[{\"member\":{\"id\":2,\"name\":\"testt\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}},{\"member\":{\"headUrl\":\"http://images.nowcoder.com/head/1t.png\",\"id\":1,\"name\":\"test\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}}]},{\"card\":{\"cardContent\":\"asdf\",\"cardName\":\"1p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":2,\"lastChanger\":1,\"panelId\":1},\"members\":[]},{\"card\":{\"cardContent\":\"ddd\",\"cardName\":\"1p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":3,\"lastChanger\":1,\"panelId\":1},\"members\":[]}]},{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":2,\"laneId\":1,\"panelName\":\"2p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":4,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":5,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":6,\"lastChanger\":1,\"panelId\":2},\"members\":[]}]}],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":1,\"laneName\":\"qwe\"}},{\"panels\":[],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":2,\"laneName\":\"空\"}}]}";
+        //var str = "{\"lanes\":[{\"panels\":[{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":1,\"laneId\":1,\"panelName\":\"1p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"1p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":1,\"lastChanger\":1,\"panelId\":1},\"members\":[{\"member\":{\"id\":2,\"name\":\"testt\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}},{\"member\":{\"headUrl\":\"http://images.nowcoder.com/head/1t.png\",\"id\":1,\"name\":\"test\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}}]},{\"card\":{\"cardContent\":\"asdf\",\"cardName\":\"1p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":2,\"lastChanger\":1,\"panelId\":1},\"members\":[]},{\"card\":{\"cardContent\":\"ddd\",\"cardName\":\"1p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":3,\"lastChanger\":1,\"panelId\":1},\"members\":[]}]},{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":2,\"laneId\":1,\"panelName\":\"2p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":4,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":5,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":6,\"lastChanger\":1,\"panelId\":2},\"members\":[]}]}],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":1,\"laneName\":\"qwe\"}},{\"panels\":[],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":2,\"laneName\":\"空\"}}]}";
         //转换成json对象(实际是lanes字段)进行操作
         var json_obj = eval('(' + str + ')');
         var lanes = json_obj.lanes;
-        for(var i = 0 ; i < lanes.length ; i++){
+        for (var i = 0; i < lanes.length; i++) {
             var panels = lanes[i].panels;
             var lane = lanes[i].lane;
-            //lane 格式
-            // "boardId":1,
-            // "createdDate":1547902072000,
-            // "description":"asdffa",
-            // "id":1,
-            // "laneName":"qwe"
-            add_lane(lane.id);
+            add_lane(lane.id, lane.boardId, lane.createdDate, lane.description, lane.laneName);
             //对panels进行遍历
-            for(var j = 0 ; j < panels.length ; j++){
+            for (var j = 0; j < panels.length; j++) {
                 var panel = panels[j].panel;
                 //  panel格式
-                // "createdDate":1547902072000,
-                // "description":"adfdsaf",
-                // "id":1,
-                // "laneId":1,
-                // "panelName":"1p"
-                var cards = panels[j].cards;
-                //  card格式
-                // "cardContent":"d",
-                // "cardName":"1p-1c",
-                // "createdDate":1547902072000,
-                // "description":"dfas",
-                // "id":1,
-                // "lastChanger":1,
-                // "panelId":1
+                // "createdDate" "description" "id" "laneId" "panelName"
                 //对cards进行遍历
-                for(var k = 0 ; k < cards.length ; k++){
+                var cards = panels[j].cards;
+                for (var k = 0; k < cards.length; k++) {
                     var card = cards[k].card;
+                    //  card格式
+                    // "cardContent" "cardName" "createdDate" "description" "id" "lastChanger" "panelId"
                     var members = cards[k].members;
-                    add_card(lane.id+"_"+j.toString(), card.cardContent, card.id);
+                    add_card(lane.id + "_" + j.toString(), card.cardContent, card.id, card.cardName,
+                        card.createdDate, card.description, card.lastChanger);
                     //对members进行遍历
-                    for(var p = 0 ; p < members.length ; p++){
+                    for (var p = 0; p < members.length; p++) {
                         var member = members[p].member;
                         // member格式
-                        // "id":2,
-                        //     "name":"testt",
-                        //     "password":"23432",
-                        //     "salt":"234312333",
-                        //     "status":0
+                        // "id" "name" "password" "salt" "status"
                     }
                 }
             }
         }
-        //alert(lanes[0].lane.boardId);
+        is_init = true;
     }
 
-    function init(){
+    function init() {
         var div = document.getElementById("board");
         var button = document.createElement("input");
         var text = document.createElement("input");
@@ -139,61 +119,85 @@
         button.setAttribute("id", "add_lane_button");
         button.setAttribute("type", "button");
         button.setAttribute("value", "增加泳道");
-        button.setAttribute("onclick","add_lane()");
+        button.setAttribute("onclick", "add_lane()");
         div.appendChild(button);
     }
 
     //增加泳道，自动添加四个panel（模仿leangoo）
-    function add_lane(id) {
+    function add_lane(id, b, c, d, l) {
         // if(webSocket != null){
+
+        //测试 正确的应该是success里写上面的操作
+        $.ajax({
+            type:"POST",
+            url: "/controller/BoardController",
+            contentType: "application/json",
+            dataType: "json",
+            data: "",
+            success: function (jsonResult) {
+                alert("i'm done...someone help me!!!");
+            }
+        });
+
         var div = document.getElementById("board");
         var label = document.createElement("label");
-        //测试 获取泳道 id
-        // var id = document.getElementById("add_lane_test").value;
-        // if(id.length == 0)
-        //     id = "l"+(Math.floor(Math.random()*10)).toString();
         var div_label = document.createElement("div");
         //获取增加泳道按钮
         var add_lane_button = document.getElementById("add_lane_button");
         //创建删除泳道按钮
         var delete_lane_button = document.createElement("input");
+
         delete_lane_button.setAttribute("type", "button");
-        delete_lane_button.setAttribute("id", "delete_lane"+id);
+        delete_lane_button.setAttribute("id", "delete_lane" + id);
         delete_lane_button.setAttribute("value", "删除泳道");
         delete_lane_button.setAttribute("style", "margin-left:5px");
-        delete_lane_button.onclick = function(){delete_lane(id);};
+        delete_lane_button.onclick = function () {
+            delete_lane(id);
+        };
         lane_ids.push(id);
-        label.innerText = "lane_id:"+id;
+        label.innerText = "lane_id:" + id;
+
         //测试，显示泳道 id
         div_label.appendChild(label);
         div_label.appendChild(delete_lane_button);
         div_label.appendChild(document.createElement("br"));
-        for(var i = 0 ; i <= 3 ; i++){
+
+        //用display=none的span标签保存暂时不用的信息
+        //boardId为int，其余为string
+        div_label.appendChild(create_none_display(id, "boardId", b));
+        div_label.appendChild(create_none_display(id, "createdDate", c));
+        div_label.appendChild(create_none_display(id, "description", d));
+        div_label.appendChild(create_none_display(id, "laneName", l));
+
+        for (var i = 0; i <= 3; i++) {
             var panel = document.createElement("div");
             //测试，根据lane_id形成panel_id，后面从json中获取
             //闭包问题，用临时变量保存
-            let new_id = id+"_"+i.toString();
-            panel.setAttribute("id", new_id);
+            let new_id = id + "_" + i.toString();
+
             //并列显示div,且起始高度一致
+            panel.setAttribute("id", new_id);
             panel.style.display = "inline-block";
             panel.style.marginRight = "10px";
             panel.style.marginTop = "5px";
-            //panel.style.float = "left";
             panel.style.overflow = "auto";
-            //panel.setAttribute("class", "div-inline");
             var t = document.createElement("input");
-            t.setAttribute("id", new_id+"_input");
+            t.setAttribute("id", new_id + "_input");
+
             //隐藏的标签来保存card数量，方便增加卡片
             var nums = document.createElement("span");
-            //nums.setAttribute("id", new_id+"_nums");
             nums.innerText = "0";
             nums.style.display = "none";
+
             var button = document.createElement("input");
             button.setAttribute("type", "button");
             button.setAttribute("value", "增加卡片");
             button.setAttribute("style", "margin-right:15px");
+
             //增加卡片，参数为panel id
-            button.onclick = function () { add_card(new_id, document.getElementById(new_id+"_input").value, null); };
+            button.onclick = function () {
+                add_card(new_id, document.getElementById(new_id + "_input").value, null);
+            };
             panel.appendChild(button);
             panel.appendChild(document.createElement("br"));
             panel.appendChild(t);
@@ -201,8 +205,6 @@
             div_label.appendChild(panel);
         }
         div_label.setAttribute("id", id);
-        // div_label.setAttribute("width", "1000px");
-        // div_label.setAttribute("height", "200px");
         div_label.appendChild(document.createElement("br"));
         div_label.appendChild(document.createElement("br"));
         div.appendChild(div_label);
@@ -214,48 +216,73 @@
         // }
     }
 
-    function delete_lane(id){
+    function delete_lane(id) {
         //测试，删除对应id泳道
         //alert(id);
         var board = document.getElementById("board");
         board.removeChild(document.getElementById(id));
         board.removeChild(board.getElementsByTagName("br")[0]);
         board.removeChild(board.getElementsByTagName("br")[0]);
-        //board.removeChild(document.getElementsByTagName("br")[0]);
         var index = lane_ids.indexOf(id);
         lane_ids.splice(index, 1);
     }
 
-    function add_card(id, content, card_id){
+    function add_card(id, content, card_id, c, cd, d, l) {
         //测试，增加对应panel_id的卡片
         //获取panel
+        var json = [];
+        var row = {};
         var parent = document.getElementById(id);
         var card = document.createElement("input");
         var nums = parent.getElementsByTagName("span")[0];
         var t = document.createElement("input");
-        parent.removeChild(document.getElementById(parent.id+"_input"));
+
+        //测试待完善 字段名
+        row.id = 1;
+        json.push(row);
+
+        parent.removeChild(document.getElementById(parent.id + "_input"));
         parent.removeChild(parent.getElementsByTagName("br")[parseInt(nums.innerText)]);
-        nums.innerText = (parseInt(nums.innerText)+1).toString();
+        nums.innerText = (parseInt(nums.innerText) + 1).toString();
         parent.appendChild(document.createElement("br"));
-        if(card_id != null)
-            card.setAttribute("id", id+"_"+card_id);
+        if (card_id != null)
+            card.setAttribute("id", id + "_" + card_id);
         else
-            card.setAttribute("id", id+"_"+nums.innerText);
-        if(content != null)
+            card.setAttribute("id", id + "_" + nums.innerText);
+        if (content != null)
             card.setAttribute("value", content);
         else
             card.setAttribute("value", "");
         card.setAttribute("style", "");
-        t.setAttribute("id", parent.id+"_input");
-        //数据库操作，广播
-        //................
+        t.setAttribute("id", parent.id + "_input");
+
+        //用display=none的span标签保存暂时不用的信息
+        // "cardName" "createdDate" "description" "lastChanger"
+        parent.appendChild(create_none_display(id, "cardName", c));
+        parent.appendChild(create_none_display(id, "createdDate", cd));
+        parent.appendChild(create_none_display(id, "description", d));
+        parent.appendChild(create_none_display(id, "lastChanger", l));
+
+        //测试 正确的应该是success里写上面的操作
+        $.ajax({
+            type:"POST",
+            url: "/controller/BoardController",
+            contentType: "application/json",
+            dataType: "json",
+            data: json,
+            success: function (jsonResult) {
+                alert("i'm done...someone help me!!!");
+            }
+        });
+
         parent.appendChild(card);
         parent.appendChild(document.createElement("br"));
         parent.appendChild(t);
+
     }
 
     //按钮待定
-    function update_card(id, content){
+    function update_card(id, content) {
         //获取card对象
         var card = document.getElementById(id);
         card.value = content;
@@ -263,7 +290,7 @@
         //................
     }
 
-    function delete_card(id){
+    function delete_card(id) {
         //测试，删除对应panel_id的卡片
         //获取panel对象
         var card = document.getElementById(id);
@@ -273,68 +300,83 @@
         //................
     }
 
-    // function closeWs() {
-    //     webSocket.close();
-    // };
+    function closeWs() {
+        webSocket.close();
+    };
 
-    //     function initWebSocket() {
-    //         var boardName;
-    //         if(r_name != ""){
-    //             boardName = r_name;
-    //         }
-    //         else{
-    //             boardName = "init";
-    //         }
-    //         if (boardName == null || boardName.length == 0) {
-    //             alert("无效看板!");
-    //             return;
-    //         }
-    //         if ("WebSocket" in window) {
-    // //            alert("您的浏览器支持 WebSocket!");
-    //             //alert(boardName)
-    //             if (webSocket == null) {
-    //                 //var url = "ws://localhost:12345/wstest/" + boardName;
-    //                 var url = "ws://localhost:12345/wstest/";
-    //                 // 打开一个 web socket
-    //                 webSocket = new WebSocket(url);
-    //             } else {
-    //                 alert("您已进入看板...");
-    //             }
-    //
-    //             webSocket.onopen = function () {
-    //                 alert("已进入看板...");
-    //             };
-    //
-    //             webSocket.onmessage = function (evt) {
-    //                 var msg_board = document.getElementsByClassName("msg_board")[0];
-    //                 var received_msg = evt.data;
-    //                 var rec = eval("("+received_msg+")");
-    //                 board_id = rec["board_id"];
-    //                 user_id = rec["user_id"];
-    //                 action = rec["action"];
-    //                 entity = rec["entity"];
-    //                 card_id = rec["card_id"];
-    //                 panel_id = rec["panel_id"];
-    //                 lane_id = rec["lane_id"];
-    //                 content = rec["content"];
-    //                 description = rec["description"];
-    //                 var old_msg = msg_board.innerHTML;
-    //                 msg_board.innerHTML = old_msg + received_msg + "<br>";
-    //                 // 让滚动块往下移动
-    //                 msg_board.scrollTop = msg_board.scrollTop + 40;
-    //             };
-    //
-    //             webSocket.onclose = function () {
-    //                 // 关闭 websocket，清空信息板
-    //                 alert("连接已关闭...");
-    //                 webSocket = null;
-    //                 document.getElementsByClassName("msg_board")[0].innerHTML = "";
-    //             };
-    //         }
-    //         else {
-    //             // 浏览器不支持 WebSocket
-    //             alert("您的浏览器不支持 WebSocket!");
-    //         }
-    //     }
+    function initWebSocket() {
+        // var boardName;
+        // if (r_name != "") {
+        //     boardName = r_name;
+        // } else {
+        //     boardName = "init";
+        // }
+        // if (boardName == null || boardName.length == 0) {
+        //     alert("无效看板!");
+        //     return;
+        // }
+        if ("WebSocket" in window) {
+            if (webSocket == null) {
+                var url = "ws://localhost:12345/wstest/";
+                // 打开一个 web socket
+                webSocket = new WebSocket(url);
+            } else {
+                alert("您已进入看板...");
+            }
+
+            webSocket.onopen = function () {
+                alert("已进入看板...");
+            };
+
+            webSocket.onmessage = function (evt) {
+                //var msg_board = document.getElementsByClassName("msg_board")[0];
+                var received_msg = evt.data;
+                var rec = eval("(" + received_msg + ")");
+                if(is_init === false){
+                    init_web(rec);
+                }
+                else{
+                    //判断是什么具体操作
+                    var action = rec.action;
+                    switch(action){
+                        //card "createdDate" "description" "id" "laneId" "panelName"
+                        case "add_card":add_card();break;
+                        case "update_card":update_card();break;
+                        case "delete_card":delete_card();break;
+
+                        //panel
+                        // case "add_panel":add_panel();break;
+                        // case "update_panel":update_panel();break;
+                        // case "delete_panel":delete_panel();break;
+
+                        //lane
+                        case "add_lane":add_lane();break;
+                        case "delete_lane":delete_lane();break;
+
+                        default:alert("无效操作!");
+                    }
+                }
+            };
+
+            webSocket.onclose = function () {
+                // 关闭websocket
+                alert("连接已关闭...");
+                webSocket = null;
+            };
+        } else {
+            // 浏览器不支持 WebSocket
+            alert("您的浏览器不支持 WebSocket!");
+        }
+    }
+
+    //创建display=none的span标签 保存必要信息
+    function create_none_display(id, name, content) {
+        var n = document.createElement("span");
+        n.setAttribute("id", id + "_" + name);
+        n.innerText = content;
+        n.style.display = "none";
+        return n;
+    }
+
 </script>
 </html>

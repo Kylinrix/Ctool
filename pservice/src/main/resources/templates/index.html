@@ -11,8 +11,8 @@
     //如果浏览器支持WebSocket
     if(window.WebSocket){
         //参数就是与服务器连接的地址
-        var port ="12345"
-        var url = "wstest"
+        var port ="12345";
+        var url = "wstest";
         socket = new WebSocket("ws://localhost:"+port+"/"+url);
 
         //客户端收到服务器消息的时候就会执行这个回调方法
