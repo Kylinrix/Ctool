@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: Kylinrix
@@ -52,26 +51,66 @@ public class CardMemberService {
     }
 
     //Redis JSON 方式
+//    public List<User> getCardMemberByJSON(int cardId){
+//        List<String> userList= redisTemplate.opsForList().range(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),0,-1);
+//        List<User> res = new ArrayList<>();
+//        for(int i= 0;i<userList.size();i++){
+//            //System.out.println("jsonObject: "+userList.get(i));
+//            User user = (JSONObject.parseObject(userList.get(i),User.class));
+//
+//            //User user = JSON.parseObject(userList.get(0),User.class);
+//            res.add(user);
+//        }
+//        return res;
+//    }
+//
+//    public List<User> addCardMemberByJSON(int cardId,int userId){
+//        User user = userService.getUserById(userId);
+//        String userJson = JSONObject.toJSONString(user);
+//
+//        //这里需要一次检查是否已存在！
+//        redisTemplate.opsForList().leftPush(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson);
+//        return getCardMemberByJSON(cardId);
+//    }
+//
+//
+//    public boolean removeCardMemberByJSON(int cardId,int userId){
+//        User user = userService.getUserById(userId);
+//        String userJson = JSONObject.toJSONString(user);
+//        if(redisTemplate.opsForList().remove(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),1,userJson)>0)
+//            return true;
+//        else return false;
+//    }
+//
+
+    //Redis JSON 方式
     public List<User> getCardMemberByJSON(int cardId){
 
-        List<String> userList= redisTemplate.opsForList().range(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),0,-1);
-        List<User> res = new ArrayList<>();
-        for(int i= 0;i<userList.size();i++){
-            //System.out.println("jsonObject: "+userList.get(i));
-            User user = (JSONObject.parseObject(userList.get(i),User.class));
-
-            //User user = JSON.parseObject(userList.get(0),User.class);
+        Set<String> userSet =redisTemplate.opsForSet().members(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId));
+        Set<User> res = new HashSet<>();
+        for(String str : userSet){
+            User user = (JSONObject.parseObject(str,User.class));
             res.add(user);
         }
-        return res;
+
+        //暂时按照用户名排序。
+        List<User> resList=new ArrayList<User>(res);
+        resList.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                if(o1.getName().compareTo(o1.getName())>0) return 1;
+                else return 0;
+            }
+        });
+        return resList;
     }
 
     public List<User> addCardMemberByJSON(int cardId,int userId){
         User user = userService.getUserById(userId);
         String userJson = JSONObject.toJSONString(user);
 
-        //这里需要一次检查是否已存在！
-        redisTemplate.opsForList().leftPush(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson);
+        redisTemplate.opsForSet().add(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson);
+        //redisTemplate.opsForList().leftPush(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson);
         return getCardMemberByJSON(cardId);
     }
 
@@ -79,9 +118,8 @@ public class CardMemberService {
     public boolean removeCardMemberByJSON(int cardId,int userId){
         User user = userService.getUserById(userId);
         String userJson = JSONObject.toJSONString(user);
-        if(redisTemplate.opsForList().remove(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),1,userJson)>0)
+        if(redisTemplate.opsForSet().remove(KeyWordUtil.CARD_MEMBER_PREFIX+String.valueOf(cardId),userJson)>0)
             return true;
         else return false;
     }
-
 }

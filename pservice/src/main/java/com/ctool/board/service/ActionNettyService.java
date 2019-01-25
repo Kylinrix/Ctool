@@ -256,7 +256,7 @@ public class ActionNettyService {
 
         //添加返回字段，新增的卡片成员。
         jsonObject.put("code",0);
-        jsonObject.put("member",members.get(0));
+        jsonObject.put("members",members);
         return jsonObject.toJSONString();
     }
 
