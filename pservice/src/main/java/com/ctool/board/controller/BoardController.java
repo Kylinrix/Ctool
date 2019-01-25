@@ -205,6 +205,28 @@ public class BoardController {
         else return JsonUtil.getJSONString(1,"fail","用户没有权限更改看板授权。");
     }
 
+    @ResponseBody
+    @RequestMapping(path={"board/addboard"},method = {RequestMethod.POST})
+    public String addboard (Model model,
+                                       HttpServletResponse response,
+                                       HttpServletRequest request,
+                                       @RequestParam("user_id") String userId ,
+                                       @RequestParam("board_name") String boardName,
+                                       @RequestParam("description") String description,
+                                       @RequestParam("authorization") String authorization){
+        try {
+            Board board = boardService.addBoard(boardName, string2IntId(userId), description);
+            boardService.updateBoardAuthorization(board.getId(),Integer.parseInt(authorization));
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("board",board);
+            return JsonUtil.getJSONString(0,jsonObject);
+        }
+        catch (Exception e){
+            logger.warn("添加看板失败");
+            return JsonUtil.getJSONString(1,"fail","添加看板失败");
+        }
+    }
+
 
 
 
