@@ -41,7 +41,7 @@
 </style>
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
-<body onload="init();init_web()">
+<body onload="init()">
 <div id="board" class="msg_board"></div>
 <!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
 <input type="button" value="测试专用" onclick="test()"/>
@@ -53,20 +53,6 @@
     //var r_name = [[${boardName}]];
     var lane_ids = [];
     var is_init = false;
-
-    // function setJSONObj(content){
-    //     var data = {
-    //         "board_id": r_name,
-    //         "user_id":"5555",
-    //         "action":"insert",
-    //         "entity":"card",
-    //         "card_id":"6666",
-    //         "lane_id":"8888",
-    //         "content":content,
-    //         "description":"lol"
-    //     };
-    //     return JSON.stringify(data);
-    // }
 
     function test() {
         alert(lane_ids.length);
@@ -123,22 +109,28 @@
         div.appendChild(button);
     }
 
-    //增加泳道，自动添加四个panel（模仿leangoo）
+    //增加泳道的时调用的方法
     function add_lane(id, b, c, d, l) {
         // if(webSocket != null){
-
         //测试 正确的应该是success里写上面的操作
         $.ajax({
             type:"POST",
-            url: "/controller/BoardController",
+            url: "board/getMsg",
             contentType: "application/json",
             dataType: "json",
+            //传给controller的数据
             data: "",
             success: function (jsonResult) {
+                //成功操作后广播信息
+                add_lane_basic(id, b, c, d, l);
+                webSocket.send(jsonResult);
                 alert("i'm done...someone help me!!!");
             }
         });
+    }
 
+    //增加泳道基础操作封装，自动添加四个panel（模仿leangoo）
+    function add_lane_basic(id, b, c, d, l){
         var div = document.getElementById("board");
         var label = document.createElement("label");
         var div_label = document.createElement("div");
@@ -211,12 +203,26 @@
         div.removeChild(add_lane_button);
         div.removeChild(document.getElementById("add_lane_test"));
         init();
-        // var lane_content = document.getElementsByName("lane_content")[0].value.trim();
-        // webSocket.send(setJSONObj(lane_content));
-        // }
     }
 
     function delete_lane(id) {
+        $.ajax({
+            type:"POST",
+            url: "board/getMsg",
+            contentType: "application/json",
+            dataType: "json",
+            //传给controller的数据
+            data: "",
+            success: function (jsonResult) {
+                //成功操作后广播信息
+                delete_lane_basic(id);
+                webSocket.send(jsonResult);
+                alert("i'm done...someone help me!!!");
+            }
+        });
+    }
+
+    function delete_lane_basic(id){
         //测试，删除对应id泳道
         //alert(id);
         var board = document.getElementById("board");
@@ -228,18 +234,36 @@
     }
 
     function add_card(id, content, card_id, c, cd, d, l) {
-        //测试，增加对应panel_id的卡片
-        //获取panel
         var json = [];
         var row = {};
+        //测试待完善 字段名
+        row.id = 1;
+        json.push(row);
+
+        //测试 正确的应该是success里写上面的操作
+        $.ajax({
+            type:"POST",
+            url: "board/getMsg",
+            contentType: "application/json",
+            dataType: "json",
+            //传给controller的数据
+            data: "",
+            success: function (jsonResult) {
+                add_card_basic(id, content, card_id, c, cd, d, l);
+                webSocket.send(jsonResult);
+                alert("i'm done...someone help me!!!");
+            }
+        });
+    }
+
+    //增加卡片的基础操作
+    function add_card_basic(id, content, card_id, c, cd, d, l){
+        //测试，增加对应panel_id的卡片
+        //获取panel
         var parent = document.getElementById(id);
         var card = document.createElement("input");
         var nums = parent.getElementsByTagName("span")[0];
         var t = document.createElement("input");
-
-        //测试待完善 字段名
-        row.id = 1;
-        json.push(row);
 
         parent.removeChild(document.getElementById(parent.id + "_input"));
         parent.removeChild(parent.getElementsByTagName("br")[parseInt(nums.innerText)]);
@@ -263,41 +287,56 @@
         parent.appendChild(create_none_display(id, "description", d));
         parent.appendChild(create_none_display(id, "lastChanger", l));
 
-        //测试 正确的应该是success里写上面的操作
-        $.ajax({
-            type:"POST",
-            url: "/controller/BoardController",
-            contentType: "application/json",
-            dataType: "json",
-            data: json,
-            success: function (jsonResult) {
-                alert("i'm done...someone help me!!!");
-            }
-        });
-
         parent.appendChild(card);
         parent.appendChild(document.createElement("br"));
         parent.appendChild(t);
-
     }
 
     //按钮待定
-    function update_card(id, content) {
+    function update_card(id, content){
+        $.ajax({
+            type:"POST",
+            url: "board/getMsg",
+            contentType: "application/json",
+            dataType: "json",
+            //传给controller的数据
+            data: "",
+            success: function (jsonResult) {
+                update_card_basic(id, content);
+                webSocket.send(jsonResult);
+                alert("i'm done...someone help me!!!");
+            }
+        });
+    }
+
+    function update_card_basic(id, content) {
         //获取card对象
         var card = document.getElementById(id);
         card.value = content;
-        //数据库操作，广播
-        //................
     }
 
-    function delete_card(id) {
+    function delete_card(id){
+        $.ajax({
+            type:"POST",
+            url: "board/getMsg",
+            contentType: "application/json",
+            dataType: "json",
+            //传给controller的数据
+            data: "",
+            success: function (jsonResult) {
+                delete_card_basic(id);
+                webSocket.send(jsonResult);
+                alert("i'm done...someone help me!!!");
+            }
+        });
+    }
+
+    function delete_card_basic(id) {
         //测试，删除对应panel_id的卡片
         //获取panel对象
         var card = document.getElementById(id);
         var parent = card.parentElement;
         parent.removeChild(card);
-        //数据库操作，广播
-        //................
     }
 
     function closeWs() {
@@ -332,6 +371,7 @@
                 //var msg_board = document.getElementsByClassName("msg_board")[0];
                 var received_msg = evt.data;
                 var rec = eval("(" + received_msg + ")");
+                //页面只初始化一次
                 if(is_init === false){
                     init_web(rec);
                 }
@@ -340,9 +380,9 @@
                     var action = rec.action;
                     switch(action){
                         //card "createdDate" "description" "id" "laneId" "panelName"
-                        case "add_card":add_card();break;
-                        case "update_card":update_card();break;
-                        case "delete_card":delete_card();break;
+                        case "add_card":add_card_basic();break;
+                        case "update_card":update_card_basic();break;
+                        case "delete_card":delete_card_basic();break;
 
                         //panel
                         // case "add_panel":add_panel();break;
@@ -350,8 +390,8 @@
                         // case "delete_panel":delete_panel();break;
 
                         //lane
-                        case "add_lane":add_lane();break;
-                        case "delete_lane":delete_lane();break;
+                        case "add_lane":add_lane_basic();break;
+                        case "delete_lane":delete_lane_basic();break;
 
                         default:alert("无效操作!");
                     }

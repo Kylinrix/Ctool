@@ -80,7 +80,7 @@ public class BoardController {
 
     //这里可以加入缓存
     @ResponseBody
-    @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.POST})
+    @RequestMapping(path={"/board/{boardId}"}, method = {RequestMethod.POST})
     public String getAllMsg(HttpServletResponse response,
                         HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
 
