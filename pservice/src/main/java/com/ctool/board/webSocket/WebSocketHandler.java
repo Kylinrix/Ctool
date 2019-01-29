@@ -120,13 +120,14 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         //广播,带有两种失败原因
         //1、更新失败。
         //2、看板号异常。
+        JSONObject jsonObject1= JSONObject.parseObject(resJson);
+
         if (channelGroupMap.containsKey(boardId)) {
-            if(resJson!=null){
+            if((int)jsonObject1.get("code")==0){
                 channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
             }
             else{
-                resJson = JsonUtil.getJSONString(1,"fail","Board update failed");
-                channelGroupMap.get(boardId).writeAndFlush(new TextWebSocketFrame(resJson));
+                ctx.channel().writeAndFlush(resJson);
             }
         }
         else{
