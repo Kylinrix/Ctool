@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>登录界面</title>
+</head>
+<body>
+<form th:action="/login" method="get">
+    用户名：<input type="text" name="username"><br>
+    密码：<input type="text" name="password"><br>
+    <input type="submit" value="登录">
+</form>
+<!--待完善-->
+<form th:action="/logout" method="get">
+    <input type="submit" value="注销">
+</form>
+<br/>
+</body>
+</html>

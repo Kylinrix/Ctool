@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script type="text/javascript" th:src="@{https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js}"></script>
+    <link th:href="@{https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/images/favicon.ico}" type="image/x-icon"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>看版主页</title>
+</head>
+<body>
+<p>${session.user.name}</p>
+<!--保存user_id-->
+<span th:style="'display:none'">${user.id}</span>
+<div>
+    <table>
+        <tbody>
+        <tr th:each="entry : ${list}">
+            <td th:text=${entry.id} style="'display:none'"></td>
+            <td>看板名称:<a th:href="@{/board/{boardId}(boardId=${entry.id})}" th:text="${entry.name}"></a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!--应使用dubbo远程调用user service进行注销-->
+<div>
+    <form th:action="/logout" method="get">
+        <input type="submit" value="注销">
+    </form>
+</div>
+</body>
+<html>

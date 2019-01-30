@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,10 +80,10 @@ public class BoardController {
     }
 
     //这里可以加入缓存
-    @ResponseBody
+    //@ResponseBody
     @RequestMapping(path={"/board/{boardId}"}, method = {RequestMethod.POST})
     public String getAllMsg(HttpServletResponse response,
-                        HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
+                        HttpServletRequest request, Model model, ModelMap m, @PathVariable("boardId") String boardId){
 
         List<Lane> subLanes = boardService.getLanesByBoardId(string2IntId(boardId));
 
@@ -134,8 +135,10 @@ public class BoardController {
             lanes.add((JSONObject) jsonObject.clone());
         }
         res.put("lanes",lanes);
+        m.put("json_string",res.toJSONString());
 
-        return res.toJSONString();
+        //指定board.html
+        return "board";
     }
 
 
@@ -148,10 +151,10 @@ public class BoardController {
      * @Email: Kylinrix@outlook.com
      * @Description:加载用户所关联的看板,待测试！
      */
-    @ResponseBody
+    //@ResponseBody
     @RequestMapping(path = {"/board"},method = {RequestMethod.GET})
     public String userBoard(HttpServletResponse response,
-                        HttpServletRequest request, Model model){
+                            HttpServletRequest request, Model model, ModelMap m){
 
         //设置
         //request.getServletContext().getSessionCookieConfig().setDomain();
@@ -167,14 +170,21 @@ public class BoardController {
 //                jsonObject.put("board",b);
 //                subList.add(jsonObject);
 //            }
-            JSONObject res = new JSONObject();
-            res.put("boards",blist);
-            return JsonUtil.getJSONString(0,res);
+//            JSONObject res = new JSONObject();
+//            res.put("boards",blist);
+//            m.put("json_string", JsonUtil.getJSONString(0,res));
+            m.put("code", 0);
+            m.put("list", blist);
+            return "p_index";
         }
-        else
-            return JsonUtil.getJSONString(1,"失败","获得看板列表失败");
+        else{
+            //m.put("json_string", JsonUtil.getJSONString(1,"失败","获得看板列表失败"));
+            m.put("code", 1);
+            return "p_index";
+        }
 
     }
+
 
     /**
      * @Author: Kylinrix

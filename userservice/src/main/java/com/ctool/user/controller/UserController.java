@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,9 +113,10 @@ public class UserController {
      * @Description:登录
      */
 
-    @ResponseBody
+    //@ResponseBody
     @RequestMapping(path={"/login"},method = {RequestMethod.POST})
     public String login (Model model,
+                         ModelMap m,
                          HttpServletResponse response,
                          HttpServletRequest request,
                          @RequestParam("username") String username,
@@ -141,13 +143,17 @@ public class UserController {
 
                 //页面重定向可以在前端使用
                 //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
-
-                return JsonUtil.getJSONString(0, map);
+                m.put("result",JsonUtil.getJSONString(0, map));
+                return "localhost:8002/board";
             }
-            else if (map.get("msg")!=null)
-                return JsonUtil.getJSONString(1, map);
-            else
-                return JsonUtil.getJSONString(2, map);
+            else if (map.get("msg")!=null){
+                m.put("result",JsonUtil.getJSONString(1, map));
+                return "login";
+            }
+            else{
+                m.put("result",JsonUtil.getJSONString(2, map));
+                return "login";
+            }
         }
         catch (Exception e){
             logger.error("登录异常： " + e.getMessage());
@@ -190,6 +196,13 @@ public class UserController {
         }
         else
             return JsonUtil.getJSONString(1,"登出异常");
+    }
+
+    @RequestMapping(value="/login", method=RequestMethod.GET)
+    public String login_index(){
+
+        //指定login.html
+        return "login";
     }
 
 
