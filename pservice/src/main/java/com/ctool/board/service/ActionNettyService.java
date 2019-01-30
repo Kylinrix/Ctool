@@ -77,6 +77,8 @@ public class ActionNettyService {
        String action = jsonObject.getString("action");
 
        switch (action){
+           //心跳检测
+           case "heart_beat":return JsonUtil.getJSONString(999,"heart_beat_reply");
            //卡片
            case "add_card":return addCard(jsonObject);
            case "update_card": return updateCard(jsonObject);

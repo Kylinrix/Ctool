@@ -10,7 +10,7 @@ import java.util.Map;
  * @Description:
  */
 public class ViewObject {
-    private Map<String, Object> objs = new HashMap<String, Object>();
+    private Map<String, Object> objs = new HashMap<>();
     public void set(String key, Object value) {
         objs.put(key, value);
     }

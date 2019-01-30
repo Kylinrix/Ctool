@@ -10,7 +10,7 @@ package com.ctool.model.user;
  */
 
 public class UserHolder {
-    private static ThreadLocal<User> userholder = new ThreadLocal<User>();
+    private static ThreadLocal<User> userholder = new ThreadLocal<>();
 
     public User getUser(){
         return userholder.get();
