@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UACompatiable" content="ie=edge">
+    <title>CTool看板清单</title>
+    <link rel="stylesheet" href="./bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="./bootstrap-3.3.7-dist/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="./myCss/my.css">
+    <script src="./bootstrap-3.3.7-dist/js/jquery.min.js"></script>
+    <script src="./bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+</head>
+<body style="background-color: #0e74af">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="border-spacing: 0px">
+        <div class="container-fluid" style="background-color: #0c6395;">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#" style="color: white">CTool</a>
+            </div>
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input class="form-control" type="text" />
+                </div> <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <div class="col-md-2 col-md-offset-3">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: white">
+                            个人
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="./board_list.html">个人</a></li>
+                            <li><a href="#" style="background-color: #28a745">升级到企业版</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- 按钮 -->
+            <div class="col-md-1 col-md-offset-1" style="margin-top: 0.5%">
+                <!-- 创建 -->
+                <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createModal">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <!-- 看板清单 -->
+                <button type="button" class="btn btn-primary" onclick="window.location.href='./board_list.html'">
+                    <span class="glyphicon glyphicon-th-large"></span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- 创建模态框（Modal） -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #f5f5f5">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="createModalLabel" style="text-align: center;">创建</h4>
+                </div>
+                <div class="modal-body p1">
+                    <a href="#newModal" onclick="$('#createModal').modal('hide')" style="color: black;text-decoration: none" data-toggle="modal">
+                        <p style="font-weight: bold">新建看板...</p>
+                        <span>一个看板包括多个列表，每个列表包括多张任务卡片。看板成员共享看板信息，以实现团队实时协作。</span>
+                    </a>
+                </div>
+                <div class="modal-body p1">
+                    <a href="#newModal" onclick="$('#createModal').modal('hide')" style="color: black;text-decoration: none" data-toggle="modal">
+                        <p style="font-weight: bold">新建看板...</p>
+                        <span>一个看板包括多个列表，每个列表包括多张任务卡片。看板成员共享看板信息，以实现团队实时协作。</span>
+                    </a>
+                </div>
+                <!--<div class="modal-footer">-->
+                <!--</div>-->
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <!-- 新建模态框（Modal） -->
+    <div class="modal fade" id="newModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #f5f5f5">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="newModalLabel" style="text-align: center;font-weight: bold">新建看板</h4>
+                </div>
+                <div class="modal-body" style="overflow-y: scroll;max-height: 500px;height: 500px" >
+                    <p>使用自定义模板</p>
+                    <div class="spinner hidden" style="width: 100%; top: 70px; position: relative;">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                    </div>
+                    <div class="panel panel-default col-md-3 col-sm-4 p1" onclick="" style="height: 15%; background-color: #dbdbdb">
+                        <div class="" style="margin-top: 20%;">
+                            <i class="glyphicon glyphicon-plus" style="margin-left: 10%;color: #2aabd2">自定义模板</i>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 19%">使用标准模板</p>
+                    <div class="spinner hidden" style="width: 100%; top: 70px; position: relative;">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                    </div>
+                    <div class="panel panel-default col-md-3 p1" onclick="" style="height: 15%; background-color: #dbdbdb">
+                        <div class="" style="margin-top: 20%;">
+                            <span style="margin-left: 20%;color: #2aabd2">空白看板</span>
+                        </div>
+                    </div>
+                    <div class="panel panel-default col-md-3 p1" onclick="" style="margin-left: 10%;background-color:#1ab394;height: 15%;">
+                        <div class="" style="margin-top: 20%;">
+                            <span style="color:white;">Sprint Backing</span>
+                        </div>
+                    </div>
+                    <div class="panel panel-default  col-md-3 p1" onclick="" style=" margin-left: 10%;background-color:#1ab394;height: 15%;">
+                        <div class="" style="margin-top: 20%;">
+                            <span style="color:white;">Sprint Backing</span>
+                        </div>
+                    </div>
+                    <div class="panel panel-default  col-md-3 p1" onclick="" style="background-color:#1ab394;height: 15%;">
+                        <div class="" style="margin-top: 20%;">
+                            <span style="color:white;">Sprint Backing</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: #f5f5f5">
+                    <form>
+                        <div>
+                            <span >看板名称：</span>
+                            <input class=""  type="text" style="width: 35%;" placeholder="请填写看板名称">
+                            <span>所属项目:</span>
+                            <select id="altProOption" class="" style="width: 35%;">
+                                <option value="0" data-i18n="none">无</option>
+                                <option class="project-items" value="44376">敏捷开发示例项目</option>
+                            </select>
+                        </div>
+                        <div style="margin-top: 3%">
+                            <button type="button" class="btn btn-success btn-lg" style="width: 35%"> 创建 </button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+    <div style="margin-top: 5%;margin-left: 8%" >
+        <span class="glyphicon glyphicon-user" style="color: white"></span>
+        <span style="color: white;margin-left: 1%">个人看板</span>
+    </div>
+
+    <div class="" style="margin-left: 8%;margin-top: 1%">
+        <div class="panel p1" style="width: 20%;height: 90px;background-color: #a9daef" onclick="$('#createModal').modal('hide')">
+            <span class="glyphicon glyphicon-plus" style="color: white;margin-top: 12%;margin-left: 35%">新建看板</span>
+        </div>
+    </div>
+</body>
+</html>
