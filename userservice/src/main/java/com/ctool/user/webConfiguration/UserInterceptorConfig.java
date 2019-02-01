@@ -20,7 +20,7 @@ public class UserInterceptorConfig implements WebMvcConfigurer {
     @Autowired
     LoginInterceptor loginInterceptor;
 
-    private final String userPath = "/user/*";
+    private final String userPath = "/login/*";
 
     public void addInterceptors(InterceptorRegistry registry) {
         //registry.addInterceptor(loginInterceptor).addPathPatterns(userPath);

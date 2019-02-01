@@ -2,18 +2,13 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>登录界面</title>
+    <title>注册界面</title>
 </head>
 <body onload="check_result()">
-<form th:action="@{/login}" method="post">
+<form th:action="@{/register}" method="post">
     用户名：<input type="text" th:name="username"><br>
     密码：<input type="password" th:name="password"><br>
-    <input type="submit" value="登录">
-    <a th:href="@{'http://localhost:8001/register'}" th:style="'text-decoration:none;'"><input type="button" value="注册页面"></a>
-</form>
-<!--待完善-->
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="注销">
+    <input type="submit" value="注册">
 </form>
 <br/>
 </body>
@@ -25,11 +20,12 @@
         }
         var result = eval("(" + message + ")");
         if(result.code=="0"){
-            alert("登录成功！");
-            window.location.href="http://localhost:8002/board";
+            alert("注册成功，请登录...");
+            window.location.href="/login";
         }
-        else
+        else{
             alert(result.msg);
+        }
     }
 </script>
 </html>

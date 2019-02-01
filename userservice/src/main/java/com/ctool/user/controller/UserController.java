@@ -66,13 +66,14 @@ public class UserController {
      * @Email: Kylinrix@outlook.com
      * @Description:注册，若成功则发送事件。
      */
-    @ResponseBody
+    //@ResponseBody
     @RequestMapping(path={"/register"},method = {RequestMethod.POST})
     public String register (Model model,
                             HttpServletResponse response,
                             HttpServletRequest request,
-                            @RequestParam("username") String username,
-                            @RequestParam("password") String password,
+                            ModelMap m,
+                            @ModelAttribute(value = "username") String username,
+                            @ModelAttribute(value = "password") String password,
                             @RequestParam(value = "email",required = false) String email,
                             @RequestParam(value = "next",required = false) String next,
                             @RequestParam(value = "headUrl",required = false) String headUrl){
@@ -89,19 +90,30 @@ public class UserController {
                     jsonObject.put("email",user.getEmail());
                     eventProvider.fireEvent(KeyWordUtil.KAFKA_MAIL_TOPIC,jsonObject.toJSONString());
                 }
-                return JsonUtil.getJSONString(0, map);
+                m.put("result", JsonUtil.getJSONString(0, map));
+                return "register";
             }
-            else if (map.get("msg")!=null)
-                return JsonUtil.getJSONString(1, map);
-            else
-                return JsonUtil.getJSONString(2, map);
-
+            else if (map.get("msg")!=null){
+                m.put("result", JsonUtil.getJSONString(1, map));
+                return "register";
+            }
+            else{
+                m.put("result", JsonUtil.getJSONString(2, map));
+                return "register";
+            }
 
         }
         catch (Exception e){
             logger.error("注册异常： " + e.getMessage());
             return JsonUtil.getJSONString(-1,"后台注册异常");
         }
+    }
+
+    @RequestMapping(value="/register", method = RequestMethod.GET)
+    public String register_index(ModelMap map){
+        map.put("username", "");
+        map.put("password", "");
+        return "register";
     }
 
     /**
@@ -114,16 +126,17 @@ public class UserController {
      */
 
     //@ResponseBody
-    @RequestMapping(path={"/login"},method = {RequestMethod.POST})
+    @RequestMapping(value="/login",method = {RequestMethod.POST})
     public String login (Model model,
                          ModelMap m,
                          HttpServletResponse response,
                          HttpServletRequest request,
-                         @RequestParam("username") String username,
-                         @RequestParam("password") String password,
+                         @ModelAttribute(value = "username") String username,
+                         @ModelAttribute(value = "password") String password,
                          @RequestParam(value = "next",required = false) String next){
 
         try{
+            //System.out.println(username + " " + password);
             Map<String, Object> map = userService.login(username, password);
 
             if(map.containsKey("user")) {
@@ -144,13 +157,17 @@ public class UserController {
                 //页面重定向可以在前端使用
                 //if (!(StringUtils.isEmpty(next))) {return "redirect:" + next;}
                 m.put("result",JsonUtil.getJSONString(0, map));
-                return "localhost:8002/board";
+                //System.out.println();
+                //localhost:8002/board
+                return "login";
             }
             else if (map.get("msg")!=null){
+                //System.out.println(JsonUtil.getJSONString(1, map));
                 m.put("result",JsonUtil.getJSONString(1, map));
                 return "login";
             }
             else{
+                //System.out.println("333");
                 m.put("result",JsonUtil.getJSONString(2, map));
                 return "login";
             }
@@ -199,9 +216,11 @@ public class UserController {
     }
 
     @RequestMapping(value="/login", method=RequestMethod.GET)
-    public String login_index(){
+    public String login_index(ModelMap map){
 
         //指定login.html
+        map.put("username", "");
+        map.put("password", "");
         return "login";
     }
 

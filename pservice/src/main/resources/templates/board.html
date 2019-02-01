@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>看板</title>
@@ -42,66 +42,67 @@
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
 <body onload="init();init_web()">
-<div id="board" class="msg_board"></div>
+<!---->
+<div id="board" class="msg_board">
+    <!--<form id="form" th:action="@{/board/3}" method="post">-->
+        <!--&lt;!&ndash;th:style="'display:none'"&ndash;&gt;-->
+        <!--<input type="text" th:value="${boardId}" th:name="bid"><br>-->
+        <!--<input type="submit" value="...">-->
+    <!--</form>-->
+</div>
 <!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
 <input type="button" value="测试专用" onclick="test()"/>
 
 </body>
-<script type="text/javascript">
+<script th:inline="javascript">
     var webSocket;
-    var boardId;
+    var boardId = [[${boardId}]];
     var lane_ids = [];
     var is_init = false;
+    var json_result = [[${json_result}]];
 
     function test() {
-        alert(lane_ids.length);
+        alert(boardId);
     }
 
     function init_web() {
         //测试json字符串
         //var str = "{\"lanes\":[{\"panels\":[{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":1,\"laneId\":1,\"panelName\":\"1p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"1p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":1,\"lastChanger\":1,\"panelId\":1},\"members\":[{\"member\":{\"id\":2,\"name\":\"testt\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}},{\"member\":{\"headUrl\":\"http://images.nowcoder.com/head/1t.png\",\"id\":1,\"name\":\"test\",\"password\":\"23432\",\"salt\":\"234312333\",\"status\":0}}]},{\"card\":{\"cardContent\":\"asdf\",\"cardName\":\"1p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":2,\"lastChanger\":1,\"panelId\":1},\"members\":[]},{\"card\":{\"cardContent\":\"ddd\",\"cardName\":\"1p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":3,\"lastChanger\":1,\"panelId\":1},\"members\":[]}]},{\"panel\":{\"createdDate\":1547902072000,\"description\":\"adfdsaf\",\"id\":2,\"laneId\":1,\"panelName\":\"2p\"},\"cards\":[{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-1c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":4,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-2c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":5,\"lastChanger\":1,\"panelId\":2},\"members\":[]},{\"card\":{\"cardContent\":\"d\",\"cardName\":\"2p-3c\",\"createdDate\":1547902072000,\"description\":\"dfas\",\"id\":6,\"lastChanger\":1,\"panelId\":2},\"members\":[]}]}],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":1,\"laneName\":\"qwe\"}},{\"panels\":[],\"lane\":{\"boardId\":1,\"createdDate\":1547902072000,\"description\":\"asdffa\",\"id\":2,\"laneName\":\"空\"}}]}";
-        $.ajax({
-            type: "POST",
-            url: "board/" + boardId,
-            contentType: "application/json",
-            dataType: "json",
-            data: boardId,
-            success: function (jsonResult) {
                 //转换成json对象(实际是lanes字段)进行操作
-                var json_obj = eval('(' + str + ')');
-                var lanes = json_obj.lanes;
-                for (var i = 0; i < lanes.length; i++) {
-                    var panels = lanes[i].panels;
-                    var lane = lanes[i].lane;
-                    add_lane(lane.id, lane.boardId, lane.createdDate, lane.description, lane.laneName);
-                    //对panels进行遍历
-                    for (var j = 0; j < panels.length; j++) {
-                        var panel = panels[j].panel;
-                        //  panel格式
-                        // "createdDate" "description" "id" "laneId" "panelName"
-                        //对cards进行遍历
-                        var cards = panels[j].cards;
-                        for (var k = 0; k < cards.length; k++) {
-                            var card = cards[k].card;
-                            //  card格式
-                            // "cardContent" "cardName" "createdDate" "description" "id" "lastChanger" "panelId"
-                            var members = cards[k].members;
-                            add_card(lane.id + "_" + j.toString(), card.cardContent, card.id, card.cardName,
-                                card.createdDate, card.description, card.lastChanger);
-                            //对members进行遍历
-                            for (var p = 0; p < members.length; p++) {
-                                var member = members[p].member;
-                                // member格式
-                                // "id" "name" "password" "salt" "status"
-                            }
+        if(json_result != null){
+            var json_obj = eval('(' + json_result + ')');
+            var lanes = json_obj.lanes;
+            for (var i = 0; i < lanes.length; i++) {
+                var panels = lanes[i].panels;
+                var lane = lanes[i].lane;
+                add_lane_basic(lane.id, lane.boardId, lane.createdDate, lane.description, lane.laneName);
+                //对panels进行遍历
+                for (var j = 0; j < panels.length; j++) {
+                    var panel = panels[j].panel;
+                    //  panel格式
+                    // "createdDate" "description" "id" "laneId" "panelName"
+                    //对cards进行遍历
+                    var cards = panels[j].cards;
+                    for (var k = 0; k < cards.length; k++) {
+                        var card = cards[k].card;
+                        //  card格式
+                        // "cardContent" "cardName" "createdDate" "description" "id" "lastChanger" "panelId"
+                        var members = cards[k].members;
+                        add_card_basic(lane.id + "_" + j.toString(), card.cardContent, card.id, card.cardName,
+                            card.createdDate, card.description, card.lastChanger);
+                        //对members进行遍历
+                        for (var p = 0; p < members.length; p++) {
+                            var member = members[p].member;
+                            // member格式
+                            // "id" "name" "password" "salt" "status"
                         }
                     }
                 }
-               initWebSocket();
-                //标识已初始化
-                is_init = true;
             }
-        });
+            initWebSocket();
+            //标识已初始化
+            is_init = true;
+        }
     }
 
     function init() {

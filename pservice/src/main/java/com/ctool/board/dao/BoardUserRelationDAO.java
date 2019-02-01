@@ -44,7 +44,7 @@ public interface BoardUserRelationDAO {
     List<Board> selectBoardsByUserId(int userId);
 
     @Select({"select * from "+tableName+" where board_id = #{boardId} and user_id = #{userId} and user_role != 2 order by created_date DESC "})
-    BoardUserRelation selectBoardAndUserRelation(int boardId,int userId);
+    BoardUserRelation selectBoardAndUserRelation(@Param("boardId") int boardId, @Param("userId") int userId);
 
     @Delete({"delete from "+tableName+" where board_id = #{boardId} and user_id = #{userId}"})
     int deleteBoardAndUserRelation(@Param("boardId") int boardId, @Param("userId") int userId);

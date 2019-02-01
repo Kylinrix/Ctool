@@ -63,28 +63,27 @@ public class BoardController {
      */
     @RequestMapping(path={"/board/{boardId}"},method = {RequestMethod.GET})
     public String index(HttpServletResponse response,
-                        HttpServletRequest request, Model model,@PathVariable("boardId") String boardId){
+                        HttpServletRequest request, Model model,ModelMap m, @PathVariable("boardId") String boardId){
         int userId = (int)request.getSession().getAttribute("userId");
 
         if(!boardService.checkBoardExist(string2IntId(boardId))){
             model.addAttribute("msg","错误，看板不存在。");
-            return "error";
+            return "p_index";
         }
         if(boardService.checkIfBoardAuthorized(string2IntId(boardId),userId)!=0){
             model.addAttribute("msg","错误，权限不足。您不能访问该看板。");
-            return "error";
+            return "p_index";
         }
         else{
+            m.put("boardId", boardId);
+            m.put("json_result", getAllMsg(boardId));
             return "board";
         }
     }
 
     //这里可以加入缓存
     //@ResponseBody
-    @RequestMapping(path={"/board/{boardId}"}, method = {RequestMethod.POST})
-    public String getAllMsg(HttpServletResponse response,
-                        HttpServletRequest request, Model model, ModelMap m, @PathVariable("boardId") String boardId){
-
+    public String getAllMsg(String boardId){
         List<Lane> subLanes = boardService.getLanesByBoardId(string2IntId(boardId));
 
         JSONObject res = new JSONObject();
@@ -135,10 +134,8 @@ public class BoardController {
             lanes.add((JSONObject) jsonObject.clone());
         }
         res.put("lanes",lanes);
-        m.put("json_string",res.toJSONString());
-
         //指定board.html
-        return "board";
+        return res.toJSONString();
     }
 
 
@@ -163,26 +160,26 @@ public class BoardController {
 
         if(request.getSession().getAttribute("userId")!=null) {
             int userId = (int)request.getSession().getAttribute("userId");
+            //System.out.println(userId);
             //List<JSONObject> subList = new ArrayList<>();
+            User user = userService.getUserById(userId);
             List<Board> blist = boardService.getBoardsByUserid(userId);
 //            for (Board  b:blist) {
-//                JSONObject jsonObject= new JSONObject();
-//                jsonObject.put("board",b);
-//                subList.add(jsonObject);
+//                System.out.println(b.getBoardName());
 //            }
 //            JSONObject res = new JSONObject();
 //            res.put("boards",blist);
 //            m.put("json_string", JsonUtil.getJSONString(0,res));
             m.put("code", 0);
-            m.put("list", blist);
+            m.put("blist", blist);
+            m.put("user",user);
             return "p_index";
         }
         else{
-            //m.put("json_string", JsonUtil.getJSONString(1,"失败","获得看板列表失败"));
+            m.put("json_string", JsonUtil.getJSONString(1,"失败","获得看板列表失败"));
             m.put("code", 1);
             return "p_index";
         }
-
     }
 
 
