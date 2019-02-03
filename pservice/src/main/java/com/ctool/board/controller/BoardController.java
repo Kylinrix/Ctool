@@ -75,6 +75,8 @@ public class BoardController {
             return "p_index";
         }
         else{
+            m.put("userId", userId);
+            m.put("userName", userService.getUserById(userId).getName());
             m.put("boardId", boardId);
             m.put("json_result", getAllMsg(boardId));
             return "board";

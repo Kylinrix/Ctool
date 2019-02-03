@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class BoardNettyServer {
     private static final Logger logger = LoggerFactory.getLogger(BoardNettyServer.class);
 
-    private  static final  String websocketPath = "/wstest";
+    private static final  String websocketPath = "/wstest";
     private final int port;
 
     public BoardNettyServer(int port) {

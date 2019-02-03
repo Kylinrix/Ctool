@@ -85,7 +85,7 @@ public class ActionNettyService {
            case "delete_card":return deleteCard(jsonObject);
 
            //卡片成员
-           case "set_member_to_card":return addMemberToCard(jsonObject);
+           case "add_member_to_card":return addMemberToCard(jsonObject);
            case "remove_member_from_card":return removeMemberFromCard(jsonObject);
 
            //panel
@@ -146,6 +146,8 @@ public class ActionNettyService {
         //添加结果
         //这里返回的结果是int，前端需要加上ID前缀
         jsonObject.put("code",0);
+        jsonObject.put("action", "add_card");
+        jsonObject.put("laneId", boardService.getLane(boardService.getPanel(card.getId()).getLaneId()));
         jsonObject.put("card",card);
         return jsonObject.toJSONString();
     }
@@ -192,6 +194,7 @@ public class ActionNettyService {
 
         //返回结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "update_card");
         jsonObject.put("card",boardService.getCard(string2IntId(cardId)));
         return jsonObject.toJSONString();
     }
@@ -214,6 +217,7 @@ public class ActionNettyService {
 
         //添加结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "delete_card");
         return jsonObject.toJSONString();
     }
 
@@ -258,6 +262,7 @@ public class ActionNettyService {
 
         //添加返回字段，新增的卡片成员。
         jsonObject.put("code",0);
+        jsonObject.put("action", "add_member_to_card");
         jsonObject.put("members",members);
         return jsonObject.toJSONString();
     }
@@ -293,6 +298,7 @@ public class ActionNettyService {
 
         //添加返回字段
         jsonObject.put("code",0);
+        jsonObject.put("action", "remove_member_from_card");
         return jsonObject.toJSONString();
     }
 
@@ -329,6 +335,7 @@ public class ActionNettyService {
 
         //添加结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "add_panel");
         jsonObject.put("panel",panel);
         return jsonObject.toJSONString();
 
@@ -368,6 +375,7 @@ public class ActionNettyService {
 
         //返回结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "update_panel");
         jsonObject.put("panel",boardService.getPanel(string2IntId(panelId)));
         return jsonObject.toJSONString();
     }
@@ -390,6 +398,7 @@ public class ActionNettyService {
 
         //添加结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "delete_panel");
         return jsonObject.toJSONString();
     }
 
@@ -428,6 +437,7 @@ public class ActionNettyService {
         //添加结果
         //这里返回的结果是int，前端需要加上ID前缀
         jsonObject.put("code",0);
+        jsonObject.put("action", "add_lane");
         jsonObject.put("lane",lane);
         return jsonObject.toJSONString();
     }
@@ -450,6 +460,7 @@ public class ActionNettyService {
 
         //添加结果
         jsonObject.put("code",0);
+        jsonObject.put("action", "delete_lane");
         return jsonObject.toJSONString();
     }
 
@@ -484,6 +495,7 @@ public class ActionNettyService {
 
         //返回
         jsonObject.put("code",0);
+        jsonObject.put("action", "add_member_to_board");
         jsonObject.put("member",userService.getUserById(boardUserRelation.getUserId()));
         return jsonObject.toJSONString();
 
@@ -513,6 +525,7 @@ public class ActionNettyService {
 
         //返回
         jsonObject.put("code",0);
+        jsonObject.put("action", "remove_member_from_board");
         return jsonObject.toJSONString();
     }
 

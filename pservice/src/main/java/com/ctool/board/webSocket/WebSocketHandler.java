@@ -87,11 +87,12 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
         //更新用户session超时时间
         //仍然需要拿到sessionId。。。。
-        Object loginUserSessionId = redisTemplate.opsForValue().get(userId);
-        redisTemplate.opsForValue().set(userId,
-                loginUserSessionId,
-                KeyWordUtil.LOGINUSER_TIMEOUT,
-                TimeUnit.SECONDS);
+        //报错 需要修改。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+//        Object loginUserSessionId = redisTemplate.opsForValue().get(userId);
+//        redisTemplate.opsForValue().set(userId,
+//                loginUserSessionId,
+//                KeyWordUtil.LOGINUSER_TIMEOUT,
+//                TimeUnit.SECONDS);
 
 
 
@@ -110,6 +111,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         //处理数据库逻辑
         String resJson =null;
         try {
+            System.out.println(msg.text());
             resJson = actionNettyService.handlerJsonCode(msg.text());
         }
         catch (Exception e){

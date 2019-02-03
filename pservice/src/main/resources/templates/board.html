@@ -42,21 +42,17 @@
 <!--页面加载时即启动websocket服务器-->
 <!--<body onload="initWebSocket()">-->
 <body onload="init();init_web()">
-<!---->
+<p>Hello, <span id="user" th:text="${userName}"></span>!</p>
 <div id="board" class="msg_board">
-    <!--<form id="form" th:action="@{/board/3}" method="post">-->
-        <!--&lt;!&ndash;th:style="'display:none'"&ndash;&gt;-->
-        <!--<input type="text" th:value="${boardId}" th:name="bid"><br>-->
-        <!--<input type="submit" value="...">-->
-    <!--</form>-->
 </div>
-<!--<input type="button" value="退出看板" onclick="closeWs()" /><br>-->
 <input type="button" value="测试专用" onclick="test()"/>
+<a th:href="@{'http://localhost:8002/board'}" th:style="'text-decoration:none;'"><input type="button" value="返回看板列表"></a>
 
 </body>
 <script th:inline="javascript">
     var webSocket;
-    var boardId = [[${boardId}]];
+    var boardId = [[${boardId}]].toString();
+    var userId = [[${userId}]];
     var lane_ids = [];
     var is_init = false;
     var json_result = [[${json_result}]];
@@ -116,18 +112,22 @@
         button.setAttribute("id", "add_lane_button");
         button.setAttribute("type", "button");
         button.setAttribute("value", "增加泳道");
-        button.setAttribute("onclick", "add_lane()");
+        button.onclick = function(){
+            add_lane(boardId);
+        };
         div.appendChild(button);
     }
 
     //增加泳道时调用的方法
-    function add_lane(id, b, c, d, l) {
+    function add_lane(b) {
         var row = {};
-        row.user_id = "u_";
-        row.board_id = "b_"+b;
-        row.description = d;
+        row.action = "add_lane";
+        row.user_id = "user_id"+userId;
+        row.board_id = "board_id"+b;
+        row.createdDate = new Date().getTime();
+        row.description = "";
 
-        add_lane_basic(id, b, c, d, l);
+        add_lane_basic(4, b, "", "", "");
         webSocket.send(row);
     }
 
@@ -226,19 +226,21 @@
         lane_ids.splice(index, 1);
     }
 
-    function add_card(id, content, card_id, c, cd, d, l) {
+    function add_card(id, c) {
         var row = {};
-        row.user_id = "u_";
-        row.panel_id = "p_";
+        row.action = "add_card";
+        row.board_id = "b_" + boardId;
+        row.user_id = "u_" + userId;
+        row.panel_id = id.split("_")[1];
         row.content = c;
-        row.description = d;
+        row.description = "";
 
-        add_card_basic(id, content, card_id, c, cd, d, l);
-        webSocket.send(row);
+        add_card_basic(id, c, null, "", "", "", "");
+        webSocket.send(JSON.stringify(row));
     }
 
     //增加卡片的基础操作
-    function add_card_basic(id, content, card_id, c, cd, d, l) {
+    function add_card_basic(id, content, card_id, cardName, createdDate, description, lastChanger) {
         //测试，增加对应panel_id的卡片
         //获取panel
         var parent = document.getElementById(id);
@@ -263,10 +265,10 @@
 
         //用display=none的span标签保存暂时不用的信息
         // "cardName" "createdDate" "description" "lastChanger"
-        parent.appendChild(create_none_display(id, "cardName", c));
-        parent.appendChild(create_none_display(id, "createdDate", cd));
-        parent.appendChild(create_none_display(id, "description", d));
-        parent.appendChild(create_none_display(id, "lastChanger", l));
+        parent.appendChild(create_none_display(id, "cardName", cardName));
+        parent.appendChild(create_none_display(id, "createdDate", createdDate));
+        parent.appendChild(create_none_display(id, "description", description));
+        parent.appendChild(create_none_display(id, "lastChanger", lastChanger));
 
         parent.appendChild(card);
         parent.appendChild(document.createElement("br"));
@@ -313,7 +315,7 @@
     function initWebSocket() {
         if ("WebSocket" in window) {
             if (webSocket == null) {
-                var url = "ws://localhost:12345/wstest/";
+                var url = "ws://localhost:12345/wstest";
                 // 打开一个 web socket
                 webSocket = new WebSocket(url);
             } else {
@@ -327,36 +329,48 @@
             webSocket.onmessage = function (evt) {
                 //var msg_board = document.getElementsByClassName("msg_board")[0];
                 var received_msg = evt.data;
-                var rec = eval("(" + received_msg + ")");
-                //判断是什么具体操作
-                var action = rec.action;
-                switch (action) {
-                    //card "createdDate" "description" "id" "laneId" "panelName"
-                    case "add_card":
-                        add_card_basic();
-                        break;
-                    case "update_card":
-                        update_card_basic();
-                        break;
-                    case "delete_card":
-                        delete_card_basic();
-                        break;
+                var origin_data = eval("(" + received_msg + ")");
+                if(origin_data.msg != null){
+                    alert(origin_data.msg + "," + origin_data.detail);
+                }
+                else{
+                    //判断是什么具体操作
+                    var action = origin_data.action;
+                    var rec;
+                    switch (action) {
+                        //card "createdDate" "description" "id" "laneId" "panelName"
+                        case "add_card":
+                            //add_card_basic(lane.id + "_" + j.toString(), card.cardContent, card.id, card.cardName,
+                                //card.createdDate, card.description, card.lastChanger);
+                            rec = origin_data.card;
+                            alert(rec.cardContent);
+                            add_card_basic(origin_data.laneId+"_"+rec.panelId, rec.cardContent, rec.id, rec.cardName,
+                                            rec.createdDate, rec.description, rec.lastChanger);
+                            break;
+                        case "update_card":
+                            update_card_basic();
+                            break;
+                        case "delete_card":
+                            delete_card_basic();
+                            break;
 
-                    //panel
-                    // case "add_panel":add_panel();break;
-                    // case "update_panel":update_panel();break;
-                    // case "delete_panel":delete_panel();break;
+                        //panel
+                        // case "add_panel":add_panel();break;
+                        // case "update_panel":update_panel();break;
+                        // case "delete_panel":delete_panel();break;
 
-                    //lane
-                    case "add_lane":
-                        add_lane_basic();
-                        break;
-                    case "delete_lane":
-                        delete_lane_basic();
-                        break;
+                        //lane
+                        case "add_lane":
+                            //add_lane_basic(lane.id, lane.boardId, lane.createdDate, lane.description, lane.laneName);
+                            //add_lane_basic(rec.id, rec.boardId, rec.createdDate, rec.description, rec.laneName);
+                            break;
+                        case "delete_lane":
+                            delete_lane_basic();
+                            break;
 
-                    default:
-                        alert("无效操作!");
+                        default:
+                            alert("无效操作!");
+                    }
                 }
             };
 
