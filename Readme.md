@@ -56,22 +56,7 @@ MYSQL DUMP  /pservice/src/test/resources/Board-init.sql
 
 
 
-#### WebSocket json
 
-##### json 格式
-
-|   属性名    |             格式              |  类型  |          作用           |           是否必需            |               备注                |
-| :---------: | :---------------------------: | :----: | :---------------------: | :---------------------------: | :-------------------------------: |
-|  board_id   |           b_112233            | String |         看板ID          |              是               |       前端页面应保有该属性        |
-|   user_id   |            112233             | String |         用户ID          |              是               |       前端页面应保有该属性        |
-|   action    | "update"/"delete"/"insert"... | String |    N者取一，规定动作    |              是               |                无                 |
-|   entity    |   "card"/"lane",/board"....   | String | N者取一，规定操作的类型 |              是               |                无                 |
-|   card_id   |           c_112233            | String |         卡片ID          |              否               | insert card操作时后端会添加该字段 |
-|   lane_id   |           l_112233            | String |         泳道ID          | 否，注意添加card时必有lane_id | insert lane操作时后端会添加该字段 |
-|   content   |             xxxxx             | String |          内容           |              否               |           后端HTML过滤            |
-| description |             xxxxx             | String |          描述           |              否               |           后端HTML过滤            |
-|     msg     |              xxx              | String |   描述后台操作的结果    |           后台提供            |               标志                |
-|    code     |         0或者>0的数字         |  int   |     后台操作的结果      |           后台提供            |         成功与失败的标志          |
 
 ##### 解码与编码
 
